@@ -13,7 +13,10 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@octokit/app": "^13.1.8",
+    "@octokit/plugin-rest-endpoint-methods": "^17.0.0",
+    "@octokit/rest": "^22.0.1",
     "@octokit/webhooks": "^10.9.2",
     "@octokit/webhooks-methods": "^3.0.3",
     "dotenv": "^16.6.1",
