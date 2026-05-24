@@ -3,6 +3,7 @@ import { githubApp } from "../github/app";
 import { fetchDiff } from "../github/diff";
 import { getAIReview } from "../ai/review";
 import { postReview } from "../github/comments";
+import { findRelevantChunks } from "../db/search";
 
 export const webhookRouter = Router();
 
@@ -31,6 +32,7 @@ webhookRouter.post("/", async (req: Request, res: Response) => {
 githubApp.webhooks.on("pull_request.opened", async ({ payload }) => {
   const owner = payload.repository.owner.login;
   const repo = payload.repository.name;
+  const repoFullName = payload.repository.full_name;
   const pull_number = payload.pull_request.number;
   const installation_id = payload.installation?.id;
 
@@ -53,6 +55,10 @@ githubApp.webhooks.on("pull_request.opened", async ({ payload }) => {
       pull_number,
     );
     console.log(`Fetched diff: ${files.length} files changed`);
+
+    // Fetch relevant codebase context from pgvector
+    const contextChunks = await findRelevantChunks(repoFullName, diffText);
+    console.log(`Found ${contextChunks.length} relevant context chunks`);
 
     const review = await getAIReview(diffText);
     console.log(`AI review ready: ${review.reviews.length} comments`);
@@ -77,6 +83,7 @@ githubApp.webhooks.on("pull_request.opened", async ({ payload }) => {
 githubApp.webhooks.on("pull_request.synchronize", async ({ payload }) => {
   const owner = payload.repository.owner.login;
   const repo = payload.repository.name;
+  const repoFullName = payload.repository.full_name;
   const pull_number = payload.pull_request.number;
   const installation_id = payload.installation?.id;
 
@@ -96,7 +103,8 @@ githubApp.webhooks.on("pull_request.synchronize", async ({ payload }) => {
       repo,
       pull_number,
     );
-    const review = await getAIReview(diffText);
+    const contextChunks = await findRelevantChunks(repoFullName, diffText);
+    const review = await getAIReview(diffText, contextChunks);
     await postReview(
       octokit,
       owner,

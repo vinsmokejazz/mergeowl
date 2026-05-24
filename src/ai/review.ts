@@ -20,7 +20,8 @@ Rules:
 - Line numbers must be the actual line number in the NEW version of the file
 - Be specific and actionable — explain WHY something is a problem
 - Max 5 comments per PR — focus on the most important issues
-- If the code looks good, return an empty reviews array with a positive summary`;
+- If the code looks good, return an empty reviews array with a positive summary
+- Return ONLY the JSON object, no markdown backticks, no extra text`;
 
 export type AIReview = {
   reviews: {
@@ -32,8 +33,17 @@ export type AIReview = {
   summary: string;
 };
 
-export async function getAIReview(diffText: string): Promise<AIReview> {
-  const truncated = diffText.slice(0, 12000);
+export async function getAIReview(
+  diffText: string,
+  contextChunks: string[] = [],
+): Promise<AIReview> {
+  const truncated = diffText.slice(0, 8000);
+
+  // Build context section if we have relevant chunks
+  const contextSection =
+    contextChunks.length > 0
+      ? `\n\n## Relevant codebase context:\n${contextChunks.join("\n\n---\n\n").slice(0, 6000)}`
+      : "";
 
   const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
@@ -41,13 +51,13 @@ export async function getAIReview(diffText: string): Promise<AIReview> {
   });
 
   const result = await model.generateContent(
-    `Please review this pull request diff:\n\n${truncated}`
+    `Please review this pull request diff:${contextSection}\n\n## Diff:\n${truncated}`,
   );
 
   const text = result.response.text();
-  
+
   // Strip markdown code fences if Gemini wraps the JSON
   const clean = text.replace(/```json|```/g, "").trim();
-  
+
   return JSON.parse(clean) as AIReview;
 }
