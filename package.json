@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev -r dotenv/config --respawn --transpile-only src/index.ts",
+    "worker": "ts-node-dev -r dotenv/config --respawn --transpile-only src/queue/worker.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "index-repo": "ts-node -r dotenv/config src/scripts/index-repo.ts",
@@ -22,6 +23,7 @@
     "@octokit/rest": "^22.0.1",
     "@octokit/webhooks": "^10.9.2",
     "@octokit/webhooks-methods": "^3.0.3",
+    "bullmq": "^5.77.2",
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.2",
