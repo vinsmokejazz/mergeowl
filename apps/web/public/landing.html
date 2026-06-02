@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MergeOwl | Code review done by those who never sleep</title>
+  <meta name="description" content="MergeOwl watches every pull request. Catches bugs, enforces standards, and posts inline comments — before your team even opens the diff.">
+  <meta property="og:title" content="MergeOwl | Automated Code Review">
+  <meta property="og:description" content="MergeOwl catches bugs, enforces standards, and posts inline comments before your team even opens the diff.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+  <style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g:#070c07;--g2:#0b120b;--g3:#0f180f;--g4:#141f14;
+  --em:#22c55e;--em2:#16a34a;--em3:#4ade80;--em4:#bbf7d0;
+  --t1:#f0fdf4;--t2:#dcfce7;--t3:#86efac;--t4:#6b7280;--t5:#2d3f2d;
+  --border:#192619;--border2:#243824;--border3:#2d4a2d;
+  --red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6;
+  --font-display:'Instrument Serif',serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --radius:12px;--radius-sm:8px;--radius-lg:20px;
+}
+html,body{font-family:var(--font-body);background:var(--g);color:var(--t1);line-height:1.5;}
+.page{background:var(--g);min-height:100vh;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-bottom:1px solid var(--border);background:rgba(7,12,7,0.92);backdrop-filter:blur(16px);position:relative;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:22px;color:var(--t1);}
+.nav-links{display:flex;gap:32px;}
+.nav-links a{font-size:14px;color:var(--t4);text-decoration:none;font-weight:400;transition:color 0.2s;}
+.nav-links a:hover{color:var(--t1);}
+.nav-cta{background:var(--em);color:#022c0a;font-size:13px;font-weight:600;padding:9px 20px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:var(--font-body);letter-spacing:0.02em;transition:all 0.2s;}
+.nav-cta:hover{background:var(--em3);transform:translateY(-1px);}
+
+/* ── HERO ── */
+.hero{padding:110px 40px 90px;text-align:center;position:relative;overflow:hidden;min-height:700px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+
+/* Blueprint canvas sits behind everything */
+#blueprint-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+
+/* Radial vignette — pulls focus to center text */
+.hero-vignette{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%, transparent 30%, rgba(7,12,7,0.65) 70%, rgba(7,12,7,0.95) 100%);z-index:1;pointer-events:none;}
+
+/* Subtle top edge glow */
+.hero-glow-top{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:700px;height:300px;background:radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.07) 0%, transparent 70%);pointer-events:none;z-index:1;}
+
+.hero-content{position:relative;z-index:2;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.18);border-radius:100px;padding:7px 16px;font-size:11px;font-weight:500;color:var(--em3);margin-bottom:36px;letter-spacing:0.06em;text-transform:uppercase;}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--em);animation:bpulse 2s infinite;}
+@keyframes bpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(1.5)}}
+.hero h1{font-family:var(--font-display);font-size:76px;font-weight:400;line-height:1.03;color:var(--t1);max-width:820px;margin:0 auto 16px;letter-spacing:-0.025em;}
+.hero h1 em{font-style:italic;color:var(--em);}
+.hero-sub{font-size:18px;color:rgba(107,114,128,0.9);max-width:500px;margin:0 auto 48px;line-height:1.7;font-weight:300;}
+.hero-ctas{display:flex;gap:14px;justify-content:center;align-items:center;}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--em);color:#022c0a;font-size:15px;font-weight:600;padding:14px 28px;border-radius:var(--radius);border:none;cursor:pointer;font-family:var(--font-body);position:relative;overflow:hidden;transition:all 0.25s;}
+.btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);transform:translateX(-100%);animation:shimmer 2.8s infinite;}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(220%)}}
+.btn-primary:hover{background:var(--em3);transform:translateY(-2px);}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--t2);font-size:15px;font-weight:400;padding:14px 24px;border-radius:var(--radius);border:1px solid var(--border2);cursor:pointer;font-family:var(--font-body);transition:all 0.2s;}
+.btn-secondary:hover{border-color:var(--em2);color:var(--t1);}
+.hero-stats{display:flex;gap:48px;justify-content:center;margin-top:64px;padding-top:48px;border-top:1px solid rgba(31,45,31,0.6);}
+.hstat{text-align:center;}
+.hstat-n{font-family:var(--font-display);font-size:36px;color:var(--t1);}
+.hstat-n span{color:var(--em);font-style:italic;}
+.hstat-l{font-size:11px;color:var(--t4);margin-top:5px;letter-spacing:0.07em;text-transform:uppercase;font-weight:500;}
+
+/* ── MOCKUP ── */
+.mockup-section{padding:0 40px 80px;max-width:900px;margin:0 auto;}
+.mockup-label{text-align:center;font-size:11px;color:var(--t4);letter-spacing:0.1em;text-transform:uppercase;font-weight:500;margin-bottom:24px;}
+.mockup-wrap{background:var(--g2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+.mockup-bar{background:var(--g3);padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot-r{background:#ff5f56;}.dot-y{background:#febc2e;}.dot-g{background:#27c93f;}
+.mockup-body{padding:24px;}
+.pr-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px;}
+.pr-num{font-family:var(--font-mono);font-size:11px;color:var(--em);background:rgba(34,197,94,0.1);padding:3px 8px;border-radius:4px;border:1px solid rgba(34,197,94,0.2);white-space:nowrap;margin-top:3px;}
+.pr-title{font-size:15px;font-weight:500;color:var(--t1);line-height:1.4;}
+.pr-meta{font-size:12px;color:var(--t4);margin-top:3px;}
+.code-block{background:var(--g);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:12px;overflow:hidden;margin-bottom:12px;}
+.code-line{display:flex;gap:16px;padding:3px 16px;line-height:1.7;}
+.code-line.flagged{background:rgba(239,68,68,0.08);border-left:2px solid var(--red);}
+.ln{color:var(--t5);min-width:24px;text-align:right;user-select:none;}
+.code-txt{color:#a5f3c0;}
+.code-kw{color:#c084fc;}.code-str{color:#fbbf24;}.code-cm{color:#4b5563;}.code-fn{color:#60a5fa;}
+.comment-card{background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.1);border-radius:var(--radius-sm);padding:14px 16px;margin-top:8px;animation:slideIn 0.5s ease forwards;opacity:0;}
+.comment-card:nth-child(1){animation-delay:1s;}
+.comment-card:nth-child(2){animation-delay:1.7s;}
+.comment-card:nth-child(3){animation-delay:2.4s;}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.comment-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.badge-error{background:rgba(239,68,68,0.12);color:#fca5a5;border:1px solid rgba(239,68,68,0.2);}
+.badge-warn{background:rgba(245,158,11,0.12);color:#fcd34d;border:1px solid rgba(245,158,11,0.2);}
+.badge-sug{background:rgba(34,197,94,0.1);color:#86efac;border:1px solid rgba(34,197,94,0.15);}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 9px;border-radius:4px;letter-spacing:0.05em;text-transform:uppercase;}
+.comment-file{font-family:var(--font-mono);font-size:11px;color:var(--t4);}
+.comment-body{font-size:13px;color:var(--t3);line-height:1.6;}
+
+/* ── FEATURES — REDESIGNED ── */
+.features-section{padding:80px 40px;position:relative;overflow:hidden;}
+.features-section::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg, transparent 0%, rgba(34,197,94,0.025) 50%, transparent 100%);pointer-events:none;}
+
+/* Subtle grid texture behind features */
+.features-section::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(34,197,94,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,0.03) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);}
+
+.features-inner{max-width:1000px;margin:0 auto;position:relative;z-index:1;}
+.section-label{font-size:11px;color:var(--em);letter-spacing:0.12em;text-transform:uppercase;font-weight:500;margin-bottom:14px;}
+.section-title{font-family:var(--font-display);font-size:46px;font-weight:400;color:var(--t1);line-height:1.08;margin-bottom:56px;}
+.section-title em{font-style:italic;color:var(--em);}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+
+/* Feature card — fully upgraded */
+.fcard{
+  background:var(--g2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:30px 28px 56px;
+  cursor:pointer;
+  transition:all 0.35s cubic-bezier(0.22,1,0.36,1);
+  position:relative;
+  overflow:hidden;
+}
+/* corner accent */
+.fcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(34,197,94,0.5) 50%,transparent 100%);opacity:0;transition:opacity 0.35s;}
+/* inner glow blob */
+.fcard::after{content:'';position:absolute;top:-60px;left:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,0.07) 0%,transparent 70%);opacity:0;transition:opacity 0.35s;}
+.fcard:hover{border-color:rgba(34,197,94,0.28);transform:translateY(-6px);}
+.fcard:hover::before{opacity:1;}
+.fcard:hover::after{opacity:1;}
+.fcard-num{font-family:var(--font-mono);font-size:10px;color:rgba(34,197,94,0.35);letter-spacing:0.1em;margin-bottom:20px;display:block;}
+.fcard-icon{width:46px;height:46px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:21px;color:var(--em);transition:all 0.3s;position:relative;z-index:1;}
+.fcard:hover .fcard-icon{background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.25);}
+.fcard h3{font-size:17px;font-weight:500;color:var(--t1);margin-bottom:11px;letter-spacing:-0.01em;position:relative;z-index:1;}
+.fcard p{font-size:13px;color:var(--t4);line-height:1.75;font-weight:300;position:relative;z-index:1;}
+.fcard-footer{position:absolute;bottom:0;left:0;right:0;padding:16px 28px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;opacity:0;transform:translateY(4px);transition:all 0.3s;}
+.fcard:hover .fcard-footer{opacity:1;transform:translateY(0);}
+.fcard-tag{font-size:10px;color:var(--em);font-family:var(--font-mono);letter-spacing:0.06em;}
+.fcard-arrow{color:var(--em);font-size:15px;}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:0 40px;}
+
+/* ── DASHBOARD SECTION ── */
+.dash-section{padding:80px 40px;}
+.dash-section h2{font-family:var(--font-display);font-size:38px;font-weight:400;color:var(--t1);margin-bottom:8px;text-align:center;}
+.dash-section .sub{font-size:15px;color:var(--t4);text-align:center;margin-bottom:48px;font-weight:300;}
+.dashboard{background:var(--g2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;display:flex;min-height:560px;}
+.sidebar{width:220px;background:var(--g3);border-right:1px solid var(--border);padding:24px 0;flex-shrink:0;}
+.sb-logo{padding:0 20px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.sb-logo-text{font-family:var(--font-display);font-size:18px;color:var(--t1);}
+.sb-nav{padding:16px 12px;}
+.sb-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);font-size:13px;color:var(--t4);cursor:pointer;transition:all 0.2s;margin-bottom:2px;}
+.sb-link:hover{background:rgba(255,255,255,0.04);color:var(--t2);}
+.sb-link.active{background:rgba(34,197,94,0.08);color:var(--em3);font-weight:500;}
+.sb-link i{font-size:16px;}
+.sb-section{font-size:10px;color:var(--t5);letter-spacing:0.08em;text-transform:uppercase;padding:12px 12px 6px;font-weight:500;}
+.dash-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.dash-topbar{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.dash-topbar-title{font-size:15px;font-weight:500;color:var(--t1);}
+.dash-topbar-meta{font-size:12px;color:var(--t4);}
+.dash-content{padding:24px;flex:1;}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+.stat-card{background:var(--g3);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+.stat-label{font-size:11px;color:var(--t4);letter-spacing:0.06em;text-transform:uppercase;font-weight:500;margin-bottom:10px;}
+.stat-num{font-family:var(--font-display);font-size:32px;color:var(--t1);line-height:1;}
+.stat-delta{font-size:11px;color:var(--em);margin-top:6px;display:flex;align-items:center;gap:4px;}
+.table-wrap{background:var(--g3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.table-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
+.table-title{font-size:13px;font-weight:500;color:var(--t1);}
+.table-sub{font-size:11px;color:var(--t4);}
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;color:var(--t5);font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:10px 18px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:11px 18px;font-size:12px;color:var(--t2);border-bottom:1px solid rgba(25,38,25,0.5);}
+tr:last-child td{border-bottom:none;}
+tr{animation:rowIn 0.4s ease forwards;opacity:0;}
+tr:nth-child(1){animation-delay:0.1s;}tr:nth-child(2){animation-delay:0.2s;}tr:nth-child(3){animation-delay:0.3s;}tr:nth-child(4){animation-delay:0.4s;}tr:nth-child(5){animation-delay:0.5s;}
+@keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+tr:hover td{background:rgba(34,197,94,0.02);}
+.repo-cell{display:flex;align-items:center;gap:8px;}
+.repo-dot{width:6px;height:6px;border-radius:50%;background:var(--em);}
+.pr-cell{color:var(--t4);font-family:var(--font-mono);font-size:11px;}
+.count-cell{font-family:var(--font-mono);font-size:13px;color:var(--em);}
+.action-btn{background:transparent;border:1px solid var(--border2);color:var(--t4);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:var(--font-body);transition:all 0.2s;}
+.action-btn:hover{border-color:var(--em2);color:var(--em3);}
+
+/* ── CTA — FULLY REDESIGNED ── */
+.cta-section{
+  padding:120px 40px;
+  text-align:center;
+  border-top:1px solid var(--border);
+  position:relative;
+  overflow:hidden;
+}
+/* Animated grid floor */
+#cta-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+/* Layered glow */
+.cta-glow-center{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);width:800px;height:400px;background:radial-gradient(ellipse at 50% 50%,rgba(34,197,94,0.06) 0%,transparent 65%);pointer-events:none;z-index:1;}
+.cta-glow-floor{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:600px;height:200px;background:radial-gradient(ellipse at 50% 100%,rgba(34,197,94,0.05) 0%,transparent 70%);pointer-events:none;z-index:1;}
+.cta-border-top{position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(34,197,94,0.3),rgba(34,197,94,0.6),rgba(34,197,94,0.3),transparent);z-index:2;}
+.cta-content{position:relative;z-index:3;}
+.cta-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.14);border-radius:100px;padding:6px 16px;font-size:11px;font-weight:500;color:var(--em);margin-bottom:28px;letter-spacing:0.08em;text-transform:uppercase;}
+.cta-section h2{font-family:var(--font-display);font-size:60px;font-weight:400;color:var(--t1);margin-bottom:16px;line-height:1.05;letter-spacing:-0.02em;}
+.cta-section h2 em{font-style:italic;color:var(--em);}
+.cta-sub{font-size:16px;color:var(--t4);margin-bottom:44px;font-weight:300;max-width:400px;margin-left:auto;margin-right:auto;}
+/* Two-CTA row */
+.cta-btns{display:flex;gap:14px;justify-content:center;margin-bottom:56px;}
+/* trust strip — cards instead of bare text */
+.trust-strip{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.trust-card{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;}
+.trust-card i{font-size:14px;color:var(--em);}
+.trust-card span{font-size:12px;color:var(--t4);}
+/* Social proof numbers */
+.cta-proof{display:flex;gap:48px;justify-content:center;margin-top:52px;padding-top:44px;border-top:1px solid var(--border);}
+.proof-item{text-align:center;}
+.proof-n{font-family:var(--font-display);font-size:30px;color:var(--t1);}
+.proof-n em{color:var(--em);font-style:italic;}
+.proof-l{font-size:11px;color:var(--t4);margin-top:4px;letter-spacing:0.06em;text-transform:uppercase;}
+
+/* ── SCROLL REVEAL ── */
+.scroll-reveal{opacity:0;transform:translateY(36px);transition:opacity 0.7s cubic-bezier(0.22,1,0.36,1),transform 0.7s cubic-bezier(0.22,1,0.36,1);}
+.scroll-reveal.visible{opacity:1;transform:none;}
+.scroll-reveal.delay-1{transition-delay:0.1s;}
+.scroll-reveal.delay-2{transition-delay:0.2s;}
+.scroll-reveal.delay-3{transition-delay:0.3s;}
+  </style>
+</head>
+<body>
+
+<div class="page" id="app">
+
+<nav>
+  <div class="nav-logo">
+    <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <circle cx="16" cy="16" r="14" fill="#0b120b" stroke="#22c55e" stroke-width="1"/>
+      <ellipse cx="11.5" cy="15" rx="4" ry="5" fill="#141f14" stroke="#22c55e" stroke-width="0.8"/>
+      <ellipse cx="20.5" cy="15" rx="4" ry="5" fill="#141f14" stroke="#22c55e" stroke-width="0.8"/>
+      <circle cx="11.5" cy="15" r="2.5" fill="#22c55e" opacity="0.9"/>
+      <circle cx="20.5" cy="15" r="2.5" fill="#22c55e" opacity="0.9"/>
+      <circle cx="11.5" cy="15" r="1.2" fill="#070c07"/>
+      <circle cx="20.5" cy="15" r="1.2" fill="#070c07"/>
+      <path d="M13 21 Q16 23 19 21" stroke="#22c55e" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+      <path d="M12 9 L14 12 L16 10 L18 12 L20 9" stroke="#22c55e" stroke-width="0.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    MergeOwl
+  </div>
+  <div class="nav-links">
+    <a href="#">Features</a><a href="#">Pricing</a><a href="#">Docs</a><a href="#">Changelog</a>
+  </div>
+  <button class="nav-cta">
+    <i class="ti ti-brand-github" style="font-size:15px;vertical-align:-2px;margin-right:5px" aria-hidden="true"></i>Install on GitHub
+  </button>
+</nav>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<div class="hero" id="hero">
+  <canvas id="blueprint-canvas" aria-hidden="true"></canvas>
+  <div class="hero-vignette"></div>
+  <div class="hero-glow-top"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge"><span class="badge-dot"></span>Now reviewing your PRs in seconds</div>
+    <h1>Code review done<br>by those who <em>never sleep.</em></h1>
+    <p class="hero-sub">MergeOwl watches every pull request. Catches bugs, enforces standards, and posts inline comments — before your team even opens the diff.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary">
+        <i class="ti ti-brand-github" style="font-size:17px" aria-hidden="true"></i>Install free on GitHub
+      </button>
+      <button class="btn-secondary">
+        <i class="ti ti-player-play" style="font-size:15px" aria-hidden="true"></i>Watch it work
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-n"><span id="c1">0</span>K+</div><div class="hstat-l">PRs reviewed</div></div>
+      <div class="hstat"><div class="hstat-n"><span id="c2">0</span>+</div><div class="hstat-l">teams using it</div></div>
+      <div class="hstat"><div class="hstat-n"><span id="c3">0</span>ms</div><div class="hstat-l">avg. first comment</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MOCKUP ═══════════════════ -->
+<div class="mockup-section scroll-reveal">
+  <div class="mockup-label">Live inline review — as it happens</div>
+  <div class="mockup-wrap">
+    <div class="mockup-bar">
+      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--t4);margin-left:8px">github.com / acme / api / pull / 347</span>
+    </div>
+    <div class="mockup-body">
+      <div class="pr-header">
+        <div class="pr-num">PR #347</div>
+        <div><div class="pr-title">refactor: migrate auth service to JWT rotation</div><div class="pr-meta">opened by <span style="color:var(--t2)">@sarah_dev</span> · 14 files changed · 2h ago</div></div>
+      </div>
+      <div class="code-block">
+        <div class="code-line"><span class="ln">41</span><span class="code-txt"><span class="code-kw">const</span> token = <span class="code-fn">sign</span>(payload, process.env.SECRET)</span></div>
+        <div class="code-line flagged"><span class="ln">42</span><span class="code-txt"><span class="code-kw">const</span> expires = <span class="code-str">'never'</span> <span class="code-cm">// TODO: fix later</span></span></div>
+        <div class="code-line"><span class="ln">43</span><span class="code-txt"><span class="code-fn">res</span>.cookie(<span class="code-str">'auth'</span>, token, { expires })</span></div>
+      </div>
+      <div class="comment-card">
+        <div class="comment-head"><span class="badge badge-error"><i class="ti ti-alert-triangle" style="font-size:10px" aria-hidden="true"></i> Error</span><span class="comment-file">src/auth/tokenService.ts · line 42</span></div>
+        <div class="comment-body">Token expiry set to <code style="background:rgba(239,68,68,0.1);padding:1px 5px;border-radius:3px;font-size:11px;font-family:var(--font-mono)">'never'</code> — permanent session token. Use <code style="background:rgba(34,197,94,0.08);padding:1px 5px;border-radius:3px;font-size:11px;font-family:var(--font-mono)">expiresIn: '15m'</code> with refresh rotation.</div>
+      </div>
+      <div class="comment-card">
+        <div class="comment-head"><span class="badge badge-warn"><i class="ti ti-alert-circle" style="font-size:10px" aria-hidden="true"></i> Warning</span><span class="comment-file">src/auth/tokenService.ts · line 41</span></div>
+        <div class="comment-body">Signing secret read without validation. Add startup assertion: <code style="background:rgba(245,158,11,0.08);padding:1px 5px;border-radius:3px;font-size:11px;font-family:var(--font-mono)">if (!process.env.SECRET) throw new Error(...)</code></div>
+      </div>
+      <div class="comment-card">
+        <div class="comment-head"><span class="badge badge-sug"><i class="ti ti-bulb" style="font-size:10px" aria-hidden="true"></i> Suggestion</span><span class="comment-file">src/auth/tokenService.ts · line 43</span></div>
+        <div class="comment-body">Add <code style="background:rgba(34,197,94,0.06);padding:1px 5px;border-radius:3px;font-size:11px;font-family:var(--font-mono)">httpOnly: true, secure: true, sameSite: 'strict'</code> to harden against XSS.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ FEATURES ═══════════════════ -->
+<div class="features-section scroll-reveal">
+  <div class="features-inner">
+    <div class="section-label">Why teams ship with MergeOwl</div>
+    <div class="section-title">Reviews that actually<br><em>understand</em> your code.</div>
+    <div class="cards">
+      <div class="fcard scroll-reveal delay-1">
+        <span class="fcard-num">01 ——</span>
+        <div class="fcard-icon"><i class="ti ti-shield-check" style="font-size:22px" aria-hidden="true"></i></div>
+        <h3>Security-first analysis</h3>
+        <p>Detects OWASP-top-10 patterns, secret leaks, and injection vectors across every diff — not just linting rules.</p>
+        <div class="fcard-footer">
+          <span class="fcard-tag">security.scan</span>
+          <i class="ti ti-arrow-up-right fcard-arrow" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="fcard scroll-reveal delay-2">
+        <span class="fcard-num">02 ——</span>
+        <div class="fcard-icon"><i class="ti ti-git-pull-request" style="font-size:22px" aria-hidden="true"></i></div>
+        <h3>Context-aware comments</h3>
+        <p>Understands your codebase structure, naming conventions, and past decisions to give comments that fit your team's style.</p>
+        <div class="fcard-footer">
+          <span class="fcard-tag">context.engine</span>
+          <i class="ti ti-arrow-up-right fcard-arrow" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="fcard scroll-reveal delay-3">
+        <span class="fcard-num">03 ——</span>
+        <div class="fcard-icon"><i class="ti ti-clock-bolt" style="font-size:22px" aria-hidden="true"></i></div>
+        <h3>Sub-60s turnaround</h3>
+        <p>First review comment posts before your team has opened the PR. No queue, no cold starts — always watching.</p>
+        <div class="fcard-footer">
+          <span class="fcard-tag">latency.avg: 38ms</span>
+          <i class="ti ti-arrow-up-right fcard-arrow" aria-hidden="true"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════ DASHBOARD ═══════════════════ -->
+<div class="dash-section scroll-reveal">
+  <h2>Your review <em style="font-style:italic;color:var(--em)">command centre.</em></h2>
+  <p class="sub">Everything your team needs to track, triage, and act on review activity.</p>
+  <div class="dashboard">
+    <div class="sidebar">
+      <div class="sb-logo">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#0b120b" stroke="#22c55e" stroke-width="0.8"/><ellipse cx="8.5" cy="11.5" rx="3" ry="3.8" fill="#141f14" stroke="#22c55e" stroke-width="0.6"/><ellipse cx="15.5" cy="11.5" rx="3" ry="3.8" fill="#141f14" stroke="#22c55e" stroke-width="0.6"/><circle cx="8.5" cy="11.5" r="1.8" fill="#22c55e" opacity="0.9"/><circle cx="15.5" cy="11.5" r="1.8" fill="#22c55e" opacity="0.9"/><circle cx="8.5" cy="11.5" r="0.8" fill="#070c07"/><circle cx="15.5" cy="11.5" r="0.8" fill="#070c07"/></svg>
+        <span class="sb-logo-text">MergeOwl</span>
+      </div>
+      <div class="sb-nav">
+        <div class="sb-link active"><i class="ti ti-layout-dashboard"></i> Overview</div>
+        <div class="sb-link"><i class="ti ti-git-pull-request"></i> Reviews</div>
+        <div class="sb-link"><i class="ti ti-git-branch"></i> Repositories</div>
+        <div class="sb-section">Analytics</div>
+        <div class="sb-link"><i class="ti ti-chart-bar"></i> Insights</div>
+        <div class="sb-link"><i class="ti ti-trending-up"></i> Trends</div>
+        <div class="sb-section">Settings</div>
+        <div class="sb-link"><i class="ti ti-settings"></i> Config</div>
+        <div class="sb-link"><i class="ti ti-users"></i> Team</div>
+      </div>
+    </div>
+    <div class="dash-main">
+      <div class="dash-topbar">
+        <div><div class="dash-topbar-title">Overview</div><div class="dash-topbar-meta">Last 30 days · Acme Engineering</div></div>
+        <div style="display:flex;gap:8px;">
+          <button class="action-btn"><i class="ti ti-refresh" style="font-size:12px;margin-right:3px" aria-hidden="true"></i>Sync</button>
+          <button class="action-btn" style="background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.2);color:var(--em3);">
+            <i class="ti ti-plus" style="font-size:12px;margin-right:3px" aria-hidden="true"></i>Add repo
+          </button>
+        </div>
+      </div>
+      <div class="dash-content">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-label">Total reviews</div><div class="stat-num" id="s1">0</div><div class="stat-delta"><i class="ti ti-trending-up" style="font-size:12px" aria-hidden="true"></i> +18% this month</div></div>
+          <div class="stat-card"><div class="stat-label">Comments posted</div><div class="stat-num" id="s2">0</div><div class="stat-delta"><i class="ti ti-trending-up" style="font-size:12px" aria-hidden="true"></i> +24% this month</div></div>
+          <div class="stat-card"><div class="stat-label">Repos connected</div><div class="stat-num" id="s3">0</div><div class="stat-delta" style="color:var(--em);"><i class="ti ti-check" style="font-size:12px" aria-hidden="true"></i> All active</div></div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-head"><span class="table-title">Recent reviews</span><span class="table-sub">Updated 2m ago</span></div>
+          <table>
+            <thead><tr><th>Repository</th><th>Pull request</th><th>Comments</th><th>Severity</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div class="repo-cell"><div class="repo-dot"></div>acme/api</div></td><td class="pr-cell">PR #347 · JWT rotation refactor</td><td class="count-cell">12</td><td><span class="badge badge-error">Error</span></td><td><button class="action-btn">View</button></td></tr>
+              <tr><td><div class="repo-cell"><div class="repo-dot"></div>acme/web</div></td><td class="pr-cell">PR #201 · Dashboard v2 rewrite</td><td class="count-cell">5</td><td><span class="badge badge-warn">Warning</span></td><td><button class="action-btn">View</button></td></tr>
+              <tr><td><div class="repo-cell"><div class="repo-dot"></div>acme/infra</div></td><td class="pr-cell">PR #89 · Terraform IAM policies</td><td class="count-cell">8</td><td><span class="badge badge-error">Error</span></td><td><button class="action-btn">View</button></td></tr>
+              <tr><td><div class="repo-cell"><div class="repo-dot"></div>acme/mobile</div></td><td class="pr-cell">PR #134 · Push notification service</td><td class="count-cell">3</td><td><span class="badge badge-sug">Suggestion</span></td><td><button class="action-btn">View</button></td></tr>
+              <tr><td><div class="repo-cell"><div class="repo-dot"></div>acme/sdk</div></td><td class="pr-cell">PR #56 · Rate limiting middleware</td><td class="count-cell">6</td><td><span class="badge badge-warn">Warning</span></td><td><button class="action-btn">View</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CTA ═══════════════════ -->
+<div class="cta-section scroll-reveal">
+  <canvas id="cta-canvas" aria-hidden="true"></canvas>
+  <div class="cta-glow-center"></div>
+  <div class="cta-glow-floor"></div>
+  <div class="cta-border-top"></div>
+  <div class="cta-content">
+    <div class="cta-eyebrow"><i class="ti ti-brand-github" style="font-size:13px" aria-hidden="true"></i>Free forever for small teams</div>
+    <h2>Ship code <em>you trust.</em></h2>
+    <p class="cta-sub">Free for teams up to 5 repos. No credit card. Live in 60 seconds.</p>
+    <div class="cta-btns">
+      <button class="btn-primary" style="font-size:15px;padding:15px 32px;">
+        <i class="ti ti-brand-github" style="font-size:18px" aria-hidden="true"></i>Install MergeOwl — it's free
+      </button>
+      <button class="btn-secondary" style="font-size:15px;padding:15px 24px;">
+        <i class="ti ti-calendar" style="font-size:15px" aria-hidden="true"></i>Book a demo
+      </button>
+    </div>
+    <div class="trust-strip">
+      <div class="trust-card"><i class="ti ti-shield-check"></i><span>SOC 2 Type II</span></div>
+      <div class="trust-card"><i class="ti ti-lock"></i><span>No code stored</span></div>
+      <div class="trust-card"><i class="ti ti-clock"></i><span>60s setup</span></div>
+      <div class="trust-card"><i class="ti ti-star"></i><span>4.9 on GitHub Marketplace</span></div>
+    </div>
+    <div class="cta-proof">
+      <div class="proof-item"><div class="proof-n"><em>847</em>K+</div><div class="proof-l">PRs reviewed</div></div>
+      <div class="proof-item"><div class="proof-n"><em>3.2</em>K+</div><div class="proof-l">teams onboarded</div></div>
+      <div class="proof-item"><div class="proof-n"><em>38</em>ms</div><div class="proof-l">avg. latency</div></div>
+      <div class="proof-item"><div class="proof-n"><em>99.9</em>%</div><div class="proof-l">uptime SLA</div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- .page -->
+
+<script>
+/* ═══ BLUEPRINT CANVAS ═══ */
+(function(){
+  const canvas = document.getElementById('blueprint-canvas');
+  const hero = document.querySelector('.hero');
+  let W, H, nodes=[], edges=[], labels=[], animFrame=0, t=0;
+  const EM = '#22c55e';
+  const LINE = 'rgba(34,197,94,0.13)';
+  const NODE = 'rgba(34,197,94,0.35)';
+  const TEXT = 'rgba(34,197,94,0.22)';
+
+  const LABEL_POOL = [
+    'auth.validate()','jwt.sign()','middleware','rate_limit','PR #347',
+    'security_scan','lint.check()','OWASP','token.verify','.mergeowl.yml',
+    'webhook','error: 0x4f','review.post()','merge_gate','secret_detect',
+    'acme/api','src/auth','diff.parse()','comment.thread','severity: ERROR'
+  ];
+
+  function resize(){
+    W = canvas.width = hero.offsetWidth;
+    H = canvas.height = hero.offsetHeight;
+    init();
+  }
+
+  function init(){
+    nodes=[];edges=[];labels=[];
+    /* main blueprint nodes — distributed across canvas */
+    const positions=[
+      [0.12,0.18],[0.28,0.12],[0.5,0.08],[0.72,0.15],[0.88,0.22],
+      [0.08,0.45],[0.22,0.52],[0.42,0.38],[0.6,0.42],[0.78,0.35],[0.92,0.5],
+      [0.15,0.72],[0.35,0.65],[0.55,0.75],[0.75,0.68],[0.88,0.78],
+      [0.04,0.88],[0.48,0.92],[0.82,0.88]
+    ];
+    positions.forEach((p,i)=>{
+      nodes.push({
+        x:p[0]*W, y:p[1]*H,
+        r: 2 + Math.random()*2.5,
+        pulse: Math.random()*Math.PI*2,
+        speed: 0.4 + Math.random()*0.5,
+        born: i * 18,
+        opacity: 0
+      });
+    });
+    /* edges — connect nearby nodes */
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const dx=nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<W*0.28 && Math.random()>0.35){
+          edges.push({a:i,b:j,progress:0,speed:0.004+Math.random()*0.004,delay:Math.min(nodes[i].born,nodes[j].born)+20,done:false});
+        }
+      }
+    }
+    /* floating monospace labels */
+    for(let i=0;i<10;i++){
+      labels.push({
+        text: LABEL_POOL[i % LABEL_POOL.length],
+        x: (0.05+Math.random()*0.9)*W,
+        y: (0.05+Math.random()*0.9)*H,
+        opacity:0,
+        targetOpacity: 0.18+Math.random()*0.12,
+        delay: 60+i*25
+      });
+    }
+    /* horizontal + vertical ruler lines */
+  }
+
+  function drawRulers(ctx){
+    ctx.save();
+    /* sparse horizontal lines */
+    [0.12,0.35,0.58,0.8].forEach(fy=>{
+      ctx.beginPath();
+      ctx.moveTo(0, fy*H);
+      ctx.lineTo(W, fy*H);
+      ctx.strokeStyle='rgba(34,197,94,0.04)';
+      ctx.lineWidth=1;
+      ctx.setLineDash([4,12]);
+      ctx.stroke();
+    });
+    /* sparse vertical lines */
+    [0.15,0.38,0.62,0.85].forEach(fx=>{
+      ctx.beginPath();
+      ctx.moveTo(fx*W, 0);
+      ctx.lineTo(fx*W, H);
+      ctx.strokeStyle='rgba(34,197,94,0.04)';
+      ctx.stroke();
+    });
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  function draw(){
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,W,H);
+    t++;
+
+    drawRulers(ctx);
+
+    /* edges — animate drawing in */
+    ctx.save();
+    edges.forEach(e=>{
+      if(t < e.delay) return;
+      if(!e.done) e.progress = Math.min(1, e.progress + e.speed);
+      if(e.progress>=1) e.done=true;
+      const na=nodes[e.a], nb=nodes[e.b];
+      const ex = na.x + (nb.x-na.x)*e.progress;
+      const ey = na.y + (nb.y-na.y)*e.progress;
+      ctx.beginPath();
+      ctx.moveTo(na.x, na.y);
+      ctx.lineTo(ex, ey);
+      ctx.strokeStyle = LINE;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      /* small moving dot along completed edges */
+      if(e.done){
+        const pt = (t*0.003 + e.delay*0.01) % 1;
+        const px = na.x + (nb.x-na.x)*pt;
+        const py = na.y + (nb.y-na.y)*pt;
+        ctx.beginPath();
+        ctx.arc(px,py,1.5,0,Math.PI*2);
+        ctx.fillStyle='rgba(34,197,94,0.4)';
+        ctx.fill();
+      }
+    });
+    ctx.restore();
+
+    /* nodes */
+    nodes.forEach((n,i)=>{
+      if(t < n.born) return;
+      n.opacity = Math.min(1, n.opacity + 0.04);
+      const pulse = Math.sin(t*n.speed*0.04 + n.pulse);
+      const rr = n.r + pulse*0.8;
+      /* outer ring */
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,rr+4,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(34,197,94,${0.08*n.opacity})`;
+      ctx.lineWidth=1;
+      ctx.stroke();
+      /* core */
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,rr,0,Math.PI*2);
+      ctx.fillStyle=`rgba(34,197,94,${0.5*n.opacity})`;
+      ctx.fill();
+      /* cross-hair lines on larger nodes */
+      if(n.r>3){
+        ctx.save();
+        ctx.strokeStyle=`rgba(34,197,94,${0.2*n.opacity})`;
+        ctx.lineWidth=0.5;
+        ctx.beginPath();ctx.moveTo(n.x-10,n.y);ctx.lineTo(n.x+10,n.y);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(n.x,n.y-10);ctx.lineTo(n.x,n.y+10);ctx.stroke();
+        ctx.restore();
+      }
+    });
+
+    /* floating labels */
+    ctx.save();
+    ctx.font = `400 10px 'JetBrains Mono', monospace`;
+    labels.forEach(l=>{
+      if(t < l.delay) return;
+      l.opacity = Math.min(l.targetOpacity, l.opacity+0.008);
+      ctx.fillStyle=`rgba(34,197,94,${l.opacity})`;
+      ctx.fillText(l.text, l.x, l.y);
+    });
+    ctx.restore();
+
+    animFrame = requestAnimationFrame(draw);
+  }
+
+  resize();
+  window.addEventListener('resize', ()=>{cancelAnimationFrame(animFrame);resize();});
+  draw();
+})();
+
+/* ═══ CTA PERSPECTIVE GRID ═══ */
+(function(){
+  const canvas = document.getElementById('cta-canvas');
+  const section = canvas.parentElement;
+  let W,H,t2=0;
+
+  function resize(){
+    W=canvas.width=section.offsetWidth;
+    H=canvas.height=section.offsetHeight;
+  }
+
+  function drawGrid(){
+    const ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,W,H);
+    t2++;
+
+    const VP = {x:W/2, y:H*0.55}; /* vanishing point */
+    const gridColor = 'rgba(34,197,94,';
+
+    /* horizontal lines — perspective */
+    const numH=14;
+    for(let i=0;i<numH;i++){
+      const fy = 0.55 + (i/numH)*0.55; /* only bottom half */
+      const y=fy*H;
+      const spread = (fy-0.55)/0.55; /* 0 at vp, 1 at bottom */
+      const x0 = VP.x - spread*(W*0.7);
+      const x1 = VP.x + spread*(W*0.7);
+      const alpha = spread * 0.12;
+      ctx.beginPath();
+      ctx.moveTo(x0,y);ctx.lineTo(x1,y);
+      ctx.strokeStyle=gridColor+alpha+')';
+      ctx.lineWidth=0.8;
+      ctx.stroke();
+    }
+    /* vertical / radial lines from VP */
+    const numV=18;
+    for(let i=0;i<numV;i++){
+      const angle = -70 + (i/(numV-1))*140; /* degrees spread */
+      const rad = angle*(Math.PI/180);
+      const endX = VP.x + Math.sin(rad)*H*1.2;
+      const endY = H*1.1;
+      const alpha = 0.05 + Math.abs(Math.sin(rad))*0.03;
+      ctx.beginPath();
+      ctx.moveTo(VP.x, VP.y);
+      ctx.lineTo(endX, endY);
+      ctx.strokeStyle=gridColor+alpha+')';
+      ctx.lineWidth=0.7;
+      ctx.stroke();
+    }
+    /* Animated scan line */
+    const scanY = VP.y + ((t2*0.5)%(H-VP.y));
+    ctx.beginPath();
+    ctx.moveTo(VP.x-(scanY-VP.y)*1.1, scanY);
+    ctx.lineTo(VP.x+(scanY-VP.y)*1.1, scanY);
+    ctx.strokeStyle='rgba(34,197,94,0.06)';
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+
+    requestAnimationFrame(drawGrid);
+  }
+
+  resize();
+  window.addEventListener('resize',resize);
+  drawGrid();
+})();
+
+/* ═══ SCROLL REVEAL ═══ */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});
+},{threshold:0.1});
+document.querySelectorAll('.scroll-reveal').forEach(el=>io.observe(el));
+
+/* ═══ NUMBER COUNTERS ═══ */
+function animCount(el,target,dur){
+  let s=0;const step=target/(dur/16);
+  const tick=()=>{s=Math.min(s+step,target);el.textContent=Math.round(s);if(s<target)requestAnimationFrame(tick);};
+  requestAnimationFrame(tick);
+}
+let run=false;
+new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting&&!run){
+      run=true;
+      animCount(document.getElementById('c1'),847,1800);
+      animCount(document.getElementById('c2'),3200,2000);
+      animCount(document.getElementById('c3'),58,1400);
+      animCount(document.getElementById('s1'),1243,1800);
+      animCount(document.getElementById('s2'),8471,2200);
+      animCount(document.getElementById('s3'),24,1200);
+    }
+  });
+},{threshold:0.3}).observe(document.querySelector('.hero-stats'));
+
+/* hero visible immediately */
+setTimeout(()=>document.getElementById('hero').classList.add('visible'),80);
+</script>
+</body>
+</html>

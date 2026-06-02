@@ -7,12 +7,11 @@ import { fetchDiff } from "../github/diff";
 import { getAIReview } from "../ai/review";
 import { postReview } from "../github/comments";
 import { findRelevantChunks } from "../db/search";
+import { db } from "../db/client";
+import { reviews } from "../db/schema";
 import type { ReviewJobData } from "./producer";
 
-const connection = {
-  host: "localhost",
-  port: 6379,
-};
+const connection = { host: "localhost", port: 6379 };
 
 const worker = new Worker<ReviewJobData>(
   "pr-review",
@@ -24,19 +23,20 @@ const worker = new Worker<ReviewJobData>(
 
     const octokit = await githubApp.getInstallationOctokit(installation_id);
 
+    // Get PR title
+    const { data: pr } = await octokit.request(
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}",
+      { owner, repo, pull_number },
+    );
+
     const { files, diffText } = await fetchDiff(
       octokit,
       owner,
       repo,
       pull_number,
     );
-    console.log(`[Worker] Fetched diff: ${files.length} files`);
-
     const contextChunks = await findRelevantChunks(repoFullName, diffText);
-    console.log(`[Worker] Found ${contextChunks.length} context chunks`);
-
     const review = await getAIReview(diffText, contextChunks);
-    console.log(`[Worker] Review ready: ${review.reviews.length} comments`);
 
     await postReview(
       octokit,
@@ -47,17 +47,28 @@ const worker = new Worker<ReviewJobData>(
       review.reviews,
       files,
     );
-    console.log(`[Worker]  Review posted for PR #${pull_number}`);
+
+    // Save to DB
+    await db.insert(reviews).values({
+      repoFullName,
+      pullNumber: pull_number,
+      pullTitle: pr.title,
+      commentsCount: review.reviews.length,
+      summary: review.summary,
+      status: "completed",
+      createdAt: new Date().toISOString(),
+    });
+
+    console.log(`[Worker] ✅ Review posted and saved for PR #${pull_number}`);
   },
   { connection },
 );
 
-worker.on("completed", (job) => {
-  console.log(`[Worker] Job ${job.id} completed`);
-});
-
-worker.on("failed", (job, err) => {
-  console.error(`[Worker] Job ${job?.id} failed:`, err.message);
-});
+worker.on("completed", (job) =>
+  console.log(`[Worker] Job ${job.id} completed`),
+);
+worker.on("failed", (job, err) =>
+  console.error(`[Worker] Job ${job?.id} failed:`, err.message),
+);
 
 console.log("Worker started, waiting for jobs...");

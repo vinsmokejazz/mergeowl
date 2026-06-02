@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  /* ── Core backgrounds ── */
+  --g: #0a0f0a;
+  --g2: #0d130d;
+  --g3: #111c11;
+  --g4: #162016;
+
+  /* ── Emerald accent palette ── */
+  --em: #22c55e;
+  --em2: #16a34a;
+  --em3: #4ade80;
+  --em4: #bbf7d0;
+
+  /* ── Text hierarchy ── */
+  --t1: #f0fdf4;
+  --t2: #dcfce7;
+  --t3: #86efac;
+  --t4: #6b7280;
+  --t5: #374151;
+  --t6: #1f2d1f;
+
+  /* ── Borders ── */
+  --border: #1a2a1a;
+  --border2: #243524;
+  --border3: #2d452d;
+
+  /* ── Semantic colors ── */
+  --red: #ef4444;
+  --redbg: rgba(239, 68, 68, 0.10);
+  --redbr: rgba(239, 68, 68, 0.18);
+  --yellow: #f59e0b;
+  --yellbg: rgba(245, 158, 11, 0.10);
+  --yellbr: rgba(245, 158, 11, 0.18);
+  --blue: #3b82f6;
+  --bluebg: rgba(59, 130, 246, 0.10);
+  --bluebr: rgba(59, 130, 246, 0.18);
+  --purple: #a855f7;
+  --purplebg: rgba(168, 85, 247, 0.10);
+  --purplebr: rgba(168, 85, 247, 0.18);
+
+  /* ── Radii ── */
+  --r: 10px;
+  --rs: 6px;
+  --rl: 16px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+
+  /* ── Fonts (resolved from next/font variables) ── */
+  --font-display: var(--font-instrument), 'Instrument Serif', serif;
+  --font-body: var(--font-inter), 'Inter', sans-serif;
+  --font-mono: var(--font-jetbrains), 'JetBrains Mono', monospace;
+}
+
+@theme inline {
+  --color-background: var(--g);
+  --color-foreground: var(--t1);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: var(--font-body);
+  background: var(--g);
+  color: var(--t1);
+  line-height: 1.5;
+}
+
+/* ── Keyframes ── */
+@keyframes bpulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.5); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(220%); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: translateX(0); }
+}

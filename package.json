@@ -24,6 +24,7 @@
     "@octokit/webhooks": "^10.9.2",
     "@octokit/webhooks-methods": "^3.0.3",
     "bullmq": "^5.77.2",
+    "chart.js": "^4.5.1",
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.2",

@@ -37,3 +37,22 @@ export const codeEmbeddings = pgTable(
     repoIdx: index("repo_idx").on(table.repoFullName),
   }),
 );
+
+export const installations = pgTable("installations", {
+  id: serial("id").primaryKey(),
+  installationId: integer("installation_id").notNull().unique(),
+  accountLogin: text("account_login").notNull(),
+  accountType: text("account_type").notNull(), // "User" or "Organization"
+  createdAt: text("created_at").notNull().default(new Date().toISOString()),
+});
+
+export const reviews = pgTable("reviews", {
+  id: serial("id").primaryKey(),
+  repoFullName: text("repo_full_name").notNull(),
+  pullNumber: integer("pull_number").notNull(),
+  pullTitle: text("pull_title").notNull(),
+  commentsCount: integer("comments_count").notNull().default(0),
+  summary: text("summary"),
+  status: text("status").notNull().default("completed"),
+  createdAt: text("created_at").notNull().default(new Date().toISOString()),
+});

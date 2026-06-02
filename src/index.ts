@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from "express";
 import { webhookRouter } from "./routes/webhook";
+import { apiRouter } from "./routes/api";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,6 +16,8 @@ app.use("/webhook", express.raw({ type: "*/*" }), (req, _res, next) => {
 
 // Mount the router separately
 app.use("/webhook", webhookRouter);
+
+app.use("/api", apiRouter);
 
 app.use(express.json());
 
