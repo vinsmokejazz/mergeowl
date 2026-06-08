@@ -15,7 +15,7 @@ const members = [
 export default function TeamPage() {
   return (
     <div className="page-section" style={{ animation: "fadeIn 0.3s ease both" }}>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-[14px] mb-[20px]">
+      <div className="grid grid-cols-3 gap-[14px] mb-[20px]">
         <StatCard title="Members" value="14" delta={<><Activity size={12} />+2 this month</>} deltaType="up" />
         <StatCard title="Pending invites" value="3" delta={<><Mail size={12} />Awaiting acceptance</>} deltaType="warning" />
         

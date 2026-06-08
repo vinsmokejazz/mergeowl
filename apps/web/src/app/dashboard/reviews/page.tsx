@@ -18,7 +18,7 @@ export default function ReviewsPage() {
 
   return (
     <div className="page-section" style={{ animation: "fadeIn 0.3s ease both" }}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[12px] mb-[20px]">
+      <div className="grid grid-cols-4 gap-[12px] mb-[20px]">
         <StatCard title="Total reviews" value="1,243" delta={<><Activity size={12} />+18% vs last month</>} deltaType="up" />
         <StatCard title="Open PRs" value="47" delta={<><GitPullRequest size={12} />+5 today</>} deltaType="up" />
         <StatCard title="Errors caught" value="312" delta={<><AlertTriangle size={12} />23 critical</>} deltaType="down" />

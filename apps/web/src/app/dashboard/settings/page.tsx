@@ -1,19 +1,17 @@
 "use client";
 
-import { Trash } from "lucide-react";
-
 export default function SettingsPage() {
   return (
     <div className="page-section" style={{ animation: "fadeIn 0.3s ease both" }}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-[14px] items-start">
+      <div className="grid grid-cols-2 gap-[14px] items-start">
         <div>
           <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[18px_20px] mb-[14px]">
-            <div className="text-[12px] text-[var(--t4)] font-medium tracking-[.04em] uppercase mb-[14px]">General</div>
+            <div className="text-[12px] text-[var(--t4)] font-medium tracking-[.04em] uppercase mb-[14px]">GENERAL</div>
             
             <div className="mb-[16px]">
               <div className="text-[12px] text-[var(--t4)] font-medium mb-[5px]">Organization name</div>
               <input 
-                className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] p-[8px_12px] text-[13px] text-[var(--t1)] font-[family-name:var(--font-b)] w-full outline-none transition-colors duration-180 focus:border-[var(--em2)] placeholder-[var(--t5)]" 
+                className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] p-[8px_12px] text-[13px] text-[var(--t1)] font-[family-name:var(--font-b)] w-full box-border outline-none transition-colors duration-180 focus:border-[var(--em2)] placeholder-[var(--t5)]" 
                 defaultValue="Acme Engineering" 
               />
             </div>
@@ -21,7 +19,7 @@ export default function SettingsPage() {
             <div className="mb-[16px]">
               <div className="text-[12px] text-[var(--t4)] font-medium mb-[5px]">Default branch</div>
               <input 
-                className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] p-[8px_12px] text-[13px] text-[var(--t1)] font-[family-name:var(--font-b)] w-full outline-none transition-colors duration-180 focus:border-[var(--em2)] placeholder-[var(--t5)]" 
+                className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] p-[8px_12px] text-[13px] text-[var(--t1)] font-[family-name:var(--font-b)] w-full box-border outline-none transition-colors duration-180 focus:border-[var(--em2)] placeholder-[var(--t5)]" 
                 defaultValue="main" 
               />
             </div>
@@ -29,7 +27,7 @@ export default function SettingsPage() {
             <div className="mb-[16px]">
               <div className="text-[12px] text-[var(--t4)] font-medium mb-[5px]">Webhook URL</div>
               <input 
-                className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] p-[8px_12px] text-[13px] text-[var(--t1)] font-[family-name:var(--font-b)] w-full outline-none transition-colors duration-180 focus:border-[var(--em2)] placeholder-[var(--t5)]" 
+                className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] p-[8px_12px] text-[13px] text-[var(--t1)] font-[family-name:var(--font-b)] w-full box-border outline-none transition-colors duration-180 focus:border-[var(--em2)] placeholder-[var(--t5)]" 
                 defaultValue="https://hooks.mergeowl.dev/acme/xyz" 
               />
             </div>
@@ -40,7 +38,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[18px_20px]">
-            <div className="text-[12px] text-[var(--t4)] font-medium tracking-[.04em] uppercase mb-[4px]">Notifications</div>
+            <div className="text-[12px] text-[var(--t4)] font-medium tracking-[.04em] uppercase mb-[4px]">NOTIFICATIONS</div>
             
             <div className="flex items-center justify-between py-[14px] border-b border-[var(--border)]">
               <div>
@@ -82,7 +80,7 @@ export default function SettingsPage() {
 
         <div>
           <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[18px_20px] mb-[14px]">
-            <div className="text-[12px] text-[var(--t4)] font-medium tracking-[.04em] uppercase mb-[4px]">Review behaviour</div>
+            <div className="text-[12px] text-[var(--t4)] font-medium tracking-[.04em] uppercase mb-[4px]">REVIEW BEHAVIOUR</div>
             
             <div className="flex items-center justify-between py-[14px] border-b border-[var(--border)]">
               <div>
@@ -134,12 +132,11 @@ export default function SettingsPage() {
           </div>
 
           <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[18px_20px]">
-            <div className="text-[12px] text-[var(--red)] font-medium tracking-[.04em] uppercase mb-[8px]">Danger zone</div>
+            <div className="text-[12px] text-[var(--red)] font-medium tracking-[.04em] uppercase mb-[8px]">DANGER ZONE</div>
             <div className="text-[12px] text-[var(--t4)] mb-[12px] leading-[1.6]">
               Deleting the organisation removes all connected repositories, review history, and team members permanently.
             </div>
-            <button className="inline-flex items-center gap-[6px] text-[12px] font-[family-name:var(--font-b)] p-[7px_13px] rounded-[var(--rs)] border border-[rgba(239,68,68,0.2)] bg-[rgba(239,68,68,0.08)] text-[#fca5a5] cursor-pointer transition-all duration-[180ms] hover:border-[var(--border3)] hover:text-[var(--t2)]">
-              <Trash size={13} />
+            <button className="inline-flex items-center text-[12px] font-[family-name:var(--font-b)] p-[7px_13px] rounded-[var(--rs)] border border-[rgba(239,68,68,0.2)] bg-[rgba(239,68,68,0.08)] text-[#fca5a5] cursor-pointer transition-all duration-[180ms] hover:border-[rgba(239,68,68,0.35)] hover:bg-[rgba(239,68,68,0.14)] hover:text-[#f87171]">
               Delete organisation
             </button>
           </div>

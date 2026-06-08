@@ -18,7 +18,7 @@ const reposData = [
 export default function ReposPage() {
   return (
     <div className="page-section" style={{ animation: "fadeIn 0.3s ease both" }}>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-[14px] mb-[20px]">
+      <div className="grid grid-cols-3 gap-[14px] mb-[20px]">
         <StatCard title="Connected repos" value="24" delta={<><Activity size={12} />+3 this week</>} deltaType="up" />
         <StatCard title="Active today" value="11" delta={<><Circle size={8} fill="currentColor" /><span className="text-[var(--em3)] font-medium">All healthy</span></>} deltaType="neutral" />
         <StatCard title="Pending setup" value="2" delta={<><AlertTriangle size={12} />Action needed</>} deltaType="warning" />

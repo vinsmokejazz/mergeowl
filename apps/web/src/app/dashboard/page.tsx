@@ -35,7 +35,7 @@ const revData = [
 export default function DashboardOverview() {
   return (
     <div className="page-section" style={{ animation: "fadeIn 0.3s ease both" }}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[12px] mb-[20px]">
+      <div className="grid grid-cols-4 gap-[12px] mb-[20px]">
         <StatCard
           title="Active PRs"
           value="42"
@@ -62,7 +62,7 @@ export default function DashboardOverview() {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-[14px] mb-[20px]">
+      <div className="grid grid-cols-2 gap-[14px] mb-[20px]">
         <ChartCard title="Review queue" subtitle="Last 7 days" height="180px">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={queueData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>

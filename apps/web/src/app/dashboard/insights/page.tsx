@@ -38,14 +38,14 @@ const latencyData = [
 export default function InsightsPage() {
   return (
     <div className="page-section" style={{ animation: "fadeIn 0.3s ease both" }}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[12px] mb-[20px]">
+      <div className="grid grid-cols-4 gap-[12px] mb-[20px]">
         <StatCard title="Reviews / day" value="41" delta={<><Activity size={12} />+12%</>} deltaType="up" />
         <StatCard title="Bugs prevented" value="847" delta={<><ShieldCheck size={12} />Critical: 63</>} deltaType="up" />
         <StatCard title="Time saved" value={<>312<span className="text-[16px] text-[var(--t4)]">h</span></>} delta={<><Clock size={12} />vs manual review</>} deltaType="up" />
         <StatCard title="Avg severity" value="2.4" delta={<><TrendingDown size={12} />−0.3 vs last month</>} deltaType="warning" />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-[14px] mb-[14px]">
+      <div className="grid grid-cols-2 gap-[14px] mb-[14px]">
         <ChartCard title="Reviews over time" subtitle="Last 30 days">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={revVals} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
@@ -86,7 +86,7 @@ export default function InsightsPage() {
         </ChartCard>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-[14px]">
+      <div className="grid grid-cols-2 gap-[14px]">
         <ChartCard title="Issues by repo" subtitle="Top 6">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={repoChartData} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>

@@ -25,9 +25,17 @@ export function Sidebar() {
     <div className="w-[210px] shrink-0 bg-[var(--g2)] border-r border-[var(--border)] flex flex-col h-full">
       {/* Logo */}
       <div className="p-[18px_16px] flex items-center gap-[9px] border-b border-[var(--border)]">
-        <div className="w-[24px] h-[24px] rounded-full bg-[var(--em)] flex items-center justify-center shrink-0">
-           <div className="w-[12px] h-[12px] border-2 border-white rounded-full"></div>
-        </div>
+        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true" className="shrink-0">
+          <circle cx="16" cy="16" r="14" fill="#0b120b" stroke="#22c55e" strokeWidth="1"/>
+          <ellipse cx="11.5" cy="15" rx="4" ry="5" fill="#141f14" stroke="#22c55e" strokeWidth="0.8"/>
+          <ellipse cx="20.5" cy="15" rx="4" ry="5" fill="#141f14" stroke="#22c55e" strokeWidth="0.8"/>
+          <circle cx="11.5" cy="15" r="2.5" fill="#22c55e" opacity="0.9"/>
+          <circle cx="20.5" cy="15" r="2.5" fill="#22c55e" opacity="0.9"/>
+          <circle cx="11.5" cy="15" r="1.2" fill="#070c07"/>
+          <circle cx="20.5" cy="15" r="1.2" fill="#070c07"/>
+          <path d="M13 21 Q16 23 19 21" stroke="#22c55e" strokeWidth="0.8" fill="none" strokeLinecap="round"/>
+          <path d="M12 9 L14 12 L16 10 L18 12 L20 9" stroke="#22c55e" strokeWidth="0.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
         <div className="font-[family-name:var(--font-d)] text-[19px] text-[var(--t1)]">MergeOwl</div>
       </div>
 
