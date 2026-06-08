@@ -43,7 +43,7 @@ export default function ReviewDetailPage() {
 
       {/* Inline Comment 1 */}
       <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] overflow-hidden mb-[10px]">
-        <button type="button" className="w-full text-left flex items-center gap-[10px] p-[10px_14px] cursor-pointer transition-colors duration-150 hover:bg-[rgba(255,255,255,0.02)] select-none" onClick={() => toggleComment('ic1')}>
+        <button type="button" className="w-full bg-transparent text-left flex items-center gap-[10px] p-[10px_14px] cursor-pointer transition-colors duration-150 hover:bg-[rgba(255,255,255,0.02)] select-none" onClick={() => toggleComment('ic1')}>
           <span className="inline-flex items-center gap-[3px] text-[10px] font-semibold px-[8px] py-[3px] rounded-[4px] tracking-[.04em] uppercase whitespace-nowrap bg-[var(--redbg)] text-[#fca5a5] border border-[var(--redbr)]">Error</span>
           <span className="font-[family-name:var(--font-m)] text-[11px] text-[var(--t4)]">src/auth/tokenService.ts</span>
           <span className="inline-flex items-center p-[2px_8px] rounded-[4px] text-[10px] font-medium bg-[var(--g4)] border border-[var(--border2)] text-[var(--t4)]">line 42</span>
@@ -80,7 +80,7 @@ export default function ReviewDetailPage() {
 
       {/* Inline Comment 2 */}
       <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] overflow-hidden mb-[10px]">
-        <button type="button" className="w-full text-left flex items-center gap-[10px] p-[10px_14px] cursor-pointer transition-colors duration-150 hover:bg-[rgba(255,255,255,0.02)] select-none" onClick={() => toggleComment('ic2')}>
+        <button type="button" className="w-full bg-transparent text-left flex items-center gap-[10px] p-[10px_14px] cursor-pointer transition-colors duration-150 hover:bg-[rgba(255,255,255,0.02)] select-none" onClick={() => toggleComment('ic2')}>
           <span className="inline-flex items-center gap-[3px] text-[10px] font-semibold px-[8px] py-[3px] rounded-[4px] tracking-[.04em] uppercase whitespace-nowrap bg-[var(--yellbg)] text-[#fcd34d] border border-[var(--yellbr)]">Warning</span>
           <span className="font-[family-name:var(--font-m)] text-[11px] text-[var(--t4)]">src/auth/middleware.ts</span>
           <span className="inline-flex items-center p-[2px_8px] rounded-[4px] text-[10px] font-medium bg-[var(--g4)] border border-[var(--border2)] text-[var(--t4)]">line 18</span>
@@ -92,7 +92,7 @@ export default function ReviewDetailPage() {
             <div className="bg-[var(--g)] border border-[var(--border)] rounded-[var(--rs)] overflow-hidden mb-[10px]">
               <div className="flex gap-[14px] px-[14px] py-[3px] leading-[1.7] font-[family-name:var(--font-m)] text-[11px] bg-[rgba(239,68,68,0.07)] border-l-[2px] border-l-[var(--red)] -ml-[2px]">
                 <span className="text-[var(--t5)] min-w-[20px] text-right">18</span>
-                <span><span className="text-[#c084fc]">const</span> token = <span className="text-[#60a5fa]">verify</span>(req.headers.authorization, process.env.SECRET)</span>
+                <span><span className="text-[#60a5fa]">const</span> token = <span className="text-[#60a5fa]">verify</span>(req.headers.authorization, process.env.SECRET)</span>
               </div>
             </div>
             <div className="text-[12px] text-[var(--t3)] leading-[1.7]">
@@ -104,7 +104,7 @@ export default function ReviewDetailPage() {
 
       {/* Inline Comment 3 */}
       <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] overflow-hidden mb-[10px]">
-        <button type="button" className="w-full text-left flex items-center gap-[10px] p-[10px_14px] cursor-pointer transition-colors duration-150 hover:bg-[rgba(255,255,255,0.02)] select-none" onClick={() => toggleComment('ic3')}>
+        <button type="button" className="w-full bg-transparent text-left flex items-center gap-[10px] p-[10px_14px] cursor-pointer transition-colors duration-150 hover:bg-[rgba(255,255,255,0.02)] select-none" onClick={() => toggleComment('ic3')}>
           <span className="inline-flex items-center gap-[3px] text-[10px] font-semibold px-[8px] py-[3px] rounded-[4px] tracking-[.04em] uppercase whitespace-nowrap bg-[rgba(34,197,94,0.1)] text-[var(--em3)] border border-[rgba(34,197,94,0.18)]">Suggestion</span>
           <span className="font-[family-name:var(--font-m)] text-[11px] text-[var(--t4)]">src/auth/tokenService.ts</span>
           <span className="inline-flex items-center p-[2px_8px] rounded-[4px] text-[10px] font-medium bg-[var(--g4)] border border-[var(--border2)] text-[var(--t4)]">line 43</span>
