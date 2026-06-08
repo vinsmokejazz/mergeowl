@@ -1,37 +1,44 @@
 import type { Metadata } from "next";
-import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ 
+const instrumentSerif = Instrument_Serif({
+  weight: ["400"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
-  variable: '--font-inter', 
+  variable: "--font-d",
+  display: "swap",
 });
 
-const instrument = Instrument_Serif({ 
-  weight: "400", 
-  style: ['normal', 'italic'],
+const inter = Inter({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
-  variable: '--font-instrument',
+  variable: "--font-b",
+  display: "swap",
 });
 
-const jetbrains = JetBrains_Mono({
+const jetbrainsMono = JetBrains_Mono({
+  weight: ["400", "500"],
   subsets: ["latin"],
-  variable: "--font-jetbrains",
-})
+  variable: "--font-m",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "MergeOwl — AI Code Reviews",
-  description: "Automated AI code reviews for your GitHub PRs",
+  title: "MergeOwl Dashboard",
+  description: "MergeOwl AI code review dashboard",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${instrument.variable} ${jetbrains.variable} font-sans`}>{children}</body>
+      <body className={`${instrumentSerif.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased h-full m-0 p-0`}>
+        {children}
+      </body>
     </html>
   );
 }

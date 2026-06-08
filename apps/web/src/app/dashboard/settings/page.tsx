@@ -1,117 +1,148 @@
 "use client";
 
-import { Toggle } from "@/components/ui/Toggle";
-import { useState } from "react";
-import { Trash2 } from "lucide-react";
-
-interface ToggleSetting {
-  title: string;
-  desc: string;
-  defaultChecked: boolean;
-}
-
-function SettingRow({ title, desc, checked, onChange }: { title: string; desc: string; checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <div className="flex items-center justify-between py-[14px] border-b border-[var(--border)] last:border-b-0">
-      <div>
-        <h4 className="text-[13px] font-medium text-[var(--t1)]">{title}</h4>
-        <p className="text-[11px] text-[var(--t4)] mt-[2px]">{desc}</p>
-      </div>
-      <Toggle checked={checked} onChange={onChange} />
-    </div>
-  );
-}
-
-function SettingsCard({ title, settings }: { title: string; settings: ToggleSetting[] }) {
-  const [values, setValues] = useState(settings.map(s => s.defaultChecked));
-  return (
-    <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] py-[18px] px-[20px]">
-      <div className="text-[12px] text-[var(--t4)] font-medium tracking-[0.04em] uppercase mb-[4px]">{title}</div>
-      {settings.map((s, i) => (
-        <SettingRow
-          key={s.title}
-          title={s.title}
-          desc={s.desc}
-          checked={values[i]}
-          onChange={(v) => {
-            const copy = [...values];
-            copy[i] = v;
-            setValues(copy);
-          }}
-        />
-      ))}
-    </div>
-  );
-}
+import { Trash } from "lucide-react";
 
 export default function SettingsPage() {
   return (
-    <div className="grid grid-cols-2 gap-[14px] items-start">
-      {/* Left column */}
-      <div className="flex flex-col gap-[14px]">
-        {/* General form */}
-        <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] py-[18px] px-[20px]">
-          <div className="text-[12px] text-[var(--t4)] font-medium tracking-[0.04em] uppercase mb-[14px]">General</div>
-          <div className="mb-[16px]">
-            <label className="text-[12px] text-[var(--t4)] mb-[5px] block font-medium">Organization name</label>
-            <input
-              className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] py-[8px] px-[12px] text-[13px] text-[var(--t1)] w-full outline-none transition-colors duration-[180ms] focus:border-[var(--em2)]"
-              defaultValue="Acme Engineering"
-            />
+    <div className="page-section" style={{ animation: "fadeIn 0.3s ease both" }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-[14px] items-start">
+        <div>
+          <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[18px_20px] mb-[14px]">
+            <div className="text-[12px] text-[var(--t4)] font-medium tracking-[.04em] uppercase mb-[14px]">General</div>
+            
+            <div className="mb-[16px]">
+              <div className="text-[12px] text-[var(--t4)] font-medium mb-[5px]">Organization name</div>
+              <input 
+                className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] p-[8px_12px] text-[13px] text-[var(--t1)] font-[family-name:var(--font-b)] w-full outline-none transition-colors duration-180 focus:border-[var(--em2)] placeholder-[var(--t5)]" 
+                defaultValue="Acme Engineering" 
+              />
+            </div>
+            
+            <div className="mb-[16px]">
+              <div className="text-[12px] text-[var(--t4)] font-medium mb-[5px]">Default branch</div>
+              <input 
+                className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] p-[8px_12px] text-[13px] text-[var(--t1)] font-[family-name:var(--font-b)] w-full outline-none transition-colors duration-180 focus:border-[var(--em2)] placeholder-[var(--t5)]" 
+                defaultValue="main" 
+              />
+            </div>
+            
+            <div className="mb-[16px]">
+              <div className="text-[12px] text-[var(--t4)] font-medium mb-[5px]">Webhook URL</div>
+              <input 
+                className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] p-[8px_12px] text-[13px] text-[var(--t1)] font-[family-name:var(--font-b)] w-full outline-none transition-colors duration-180 focus:border-[var(--em2)] placeholder-[var(--t5)]" 
+                defaultValue="https://hooks.mergeowl.dev/acme/xyz" 
+              />
+            </div>
+            
+            <button className="inline-flex items-center gap-[6px] text-[12px] font-[family-name:var(--font-b)] p-[7px_13px] rounded-[var(--rs)] border border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.1)] text-[var(--em3)] cursor-pointer transition-all duration-[180ms] hover:border-[rgba(34,197,94,0.18)] hover:bg-[rgba(34,197,94,0.18)] hover:text-[var(--em4)] mt-[4px]">
+              Save changes
+            </button>
           </div>
-          <div className="mb-[16px]">
-            <label className="text-[12px] text-[var(--t4)] mb-[5px] block font-medium">Default branch</label>
-            <input
-              className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] py-[8px] px-[12px] text-[13px] text-[var(--t1)] w-full outline-none transition-colors duration-[180ms] focus:border-[var(--em2)]"
-              defaultValue="main"
-            />
+
+          <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[18px_20px]">
+            <div className="text-[12px] text-[var(--t4)] font-medium tracking-[.04em] uppercase mb-[4px]">Notifications</div>
+            
+            <div className="flex items-center justify-between py-[14px] border-b border-[var(--border)]">
+              <div>
+                <h4 className="text-[13px] font-medium text-[var(--t1)] m-0">Email digest</h4>
+                <p className="text-[11px] text-[var(--t4)] mt-[2px] m-0">Daily summary of all reviews</p>
+              </div>
+              <label aria-label="Toggle Email digest" className="relative w-[36px] h-[20px] shrink-0 cursor-pointer">
+                <input type="checkbox" className="peer sr-only" defaultChecked />
+                <div className="absolute inset-0 bg-[var(--border3)] peer-checked:bg-[var(--em2)] rounded-[10px] transition-colors duration-200"></div>
+                <div className="absolute w-[14px] h-[14px] left-[3px] top-[3px] bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-[16px]"></div>
+              </label>
+            </div>
+            
+            <div className="flex items-center justify-between py-[14px] border-b border-[var(--border)]">
+              <div>
+                <h4 className="text-[13px] font-medium text-[var(--t1)] m-0">Slack alerts</h4>
+                <p className="text-[11px] text-[var(--t4)] mt-[2px] m-0">Post to #code-review on error</p>
+              </div>
+              <label aria-label="Toggle Slack alerts" className="relative w-[36px] h-[20px] shrink-0 cursor-pointer">
+                <input type="checkbox" className="peer sr-only" defaultChecked />
+                <div className="absolute inset-0 bg-[var(--border3)] peer-checked:bg-[var(--em2)] rounded-[10px] transition-colors duration-200"></div>
+                <div className="absolute w-[14px] h-[14px] left-[3px] top-[3px] bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-[16px]"></div>
+              </label>
+            </div>
+            
+            <div className="flex items-center justify-between py-[14px]">
+              <div>
+                <h4 className="text-[13px] font-medium text-[var(--t1)] m-0">PR comment auto-resolve</h4>
+                <p className="text-[11px] text-[var(--t4)] mt-[2px] m-0">Collapse fixed comments automatically</p>
+              </div>
+              <label aria-label="Toggle PR comment auto-resolve" className="relative w-[36px] h-[20px] shrink-0 cursor-pointer">
+                <input type="checkbox" className="peer sr-only" />
+                <div className="absolute inset-0 bg-[var(--border3)] peer-checked:bg-[var(--em2)] rounded-[10px] transition-colors duration-200"></div>
+                <div className="absolute w-[14px] h-[14px] left-[3px] top-[3px] bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-[16px]"></div>
+              </label>
+            </div>
           </div>
-          <div className="mb-[16px]">
-            <label className="text-[12px] text-[var(--t4)] mb-[5px] block font-medium">Webhook URL</label>
-            <input
-              className="bg-[var(--g4)] border border-[var(--border2)] rounded-[var(--rs)] py-[8px] px-[12px] text-[13px] text-[var(--t1)] w-full outline-none transition-colors duration-[180ms] focus:border-[var(--em2)] font-[family-name:var(--font-mono)]"
-              defaultValue="https://hooks.mergeowl.dev/acme/xyz"
-            />
-          </div>
-          <button className="inline-flex items-center gap-[6px] text-[12px] py-[7px] px-[13px] rounded-[var(--rs)] cursor-pointer transition-all duration-[180ms] bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.25)] text-[var(--em3)] hover:bg-[rgba(34,197,94,0.18)] mt-[4px]">
-            Save changes
-          </button>
         </div>
 
-        {/* Notifications */}
-        <SettingsCard
-          title="Notifications"
-          settings={[
-            { title: "Email digest", desc: "Daily summary of all reviews", defaultChecked: true },
-            { title: "Slack alerts", desc: "Post to #code-review on error", defaultChecked: true },
-            { title: "PR comment auto-resolve", desc: "Collapse fixed comments automatically", defaultChecked: false },
-          ]}
-        />
-      </div>
-
-      {/* Right column */}
-      <div className="flex flex-col gap-[14px]">
-        {/* Review behaviour */}
-        <SettingsCard
-          title="Review behaviour"
-          settings={[
-            { title: "Review on draft PRs", desc: "Analyse drafts before review request", defaultChecked: false },
-            { title: "Block merge on errors", desc: "Require resolution before merging", defaultChecked: true },
-            { title: "Security scan", desc: "OWASP top-10 detection enabled", defaultChecked: true },
-            { title: "Secret detection", desc: "Flag API keys, tokens, passwords", defaultChecked: true },
-          ]}
-        />
-
-        {/* Danger zone */}
-        <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] py-[18px] px-[20px]">
-          <div className="text-[12px] text-[var(--red)] font-medium tracking-[0.04em] uppercase mb-[8px]">Danger zone</div>
-          <div className="text-[12px] text-[var(--t4)] mb-[12px] leading-[1.6]">
-            Deleting the organisation removes all connected repositories, review history, and team members permanently.
+        <div>
+          <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[18px_20px] mb-[14px]">
+            <div className="text-[12px] text-[var(--t4)] font-medium tracking-[.04em] uppercase mb-[4px]">Review behaviour</div>
+            
+            <div className="flex items-center justify-between py-[14px] border-b border-[var(--border)]">
+              <div>
+                <h4 className="text-[13px] font-medium text-[var(--t1)] m-0">Review on draft PRs</h4>
+                <p className="text-[11px] text-[var(--t4)] mt-[2px] m-0">Analyse drafts before review request</p>
+              </div>
+              <label aria-label="Toggle Review on draft PRs" className="relative w-[36px] h-[20px] shrink-0 cursor-pointer">
+                <input type="checkbox" className="peer sr-only" />
+                <div className="absolute inset-0 bg-[var(--border3)] peer-checked:bg-[var(--em2)] rounded-[10px] transition-colors duration-200"></div>
+                <div className="absolute w-[14px] h-[14px] left-[3px] top-[3px] bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-[16px]"></div>
+              </label>
+            </div>
+            
+            <div className="flex items-center justify-between py-[14px] border-b border-[var(--border)]">
+              <div>
+                <h4 className="text-[13px] font-medium text-[var(--t1)] m-0">Block merge on errors</h4>
+                <p className="text-[11px] text-[var(--t4)] mt-[2px] m-0">Require resolution before merging</p>
+              </div>
+              <label aria-label="Toggle Block merge on errors" className="relative w-[36px] h-[20px] shrink-0 cursor-pointer">
+                <input type="checkbox" className="peer sr-only" defaultChecked />
+                <div className="absolute inset-0 bg-[var(--border3)] peer-checked:bg-[var(--em2)] rounded-[10px] transition-colors duration-200"></div>
+                <div className="absolute w-[14px] h-[14px] left-[3px] top-[3px] bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-[16px]"></div>
+              </label>
+            </div>
+            
+            <div className="flex items-center justify-between py-[14px] border-b border-[var(--border)]">
+              <div>
+                <h4 className="text-[13px] font-medium text-[var(--t1)] m-0">Security scan</h4>
+                <p className="text-[11px] text-[var(--t4)] mt-[2px] m-0">OWASP top-10 detection enabled</p>
+              </div>
+              <label aria-label="Toggle Security scan" className="relative w-[36px] h-[20px] shrink-0 cursor-pointer">
+                <input type="checkbox" className="peer sr-only" defaultChecked />
+                <div className="absolute inset-0 bg-[var(--border3)] peer-checked:bg-[var(--em2)] rounded-[10px] transition-colors duration-200"></div>
+                <div className="absolute w-[14px] h-[14px] left-[3px] top-[3px] bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-[16px]"></div>
+              </label>
+            </div>
+            
+            <div className="flex items-center justify-between py-[14px]">
+              <div>
+                <h4 className="text-[13px] font-medium text-[var(--t1)] m-0">Secret detection</h4>
+                <p className="text-[11px] text-[var(--t4)] mt-[2px] m-0">Flag API keys, tokens, passwords</p>
+              </div>
+              <label aria-label="Toggle Secret detection" className="relative w-[36px] h-[20px] shrink-0 cursor-pointer">
+                <input type="checkbox" className="peer sr-only" defaultChecked />
+                <div className="absolute inset-0 bg-[var(--border3)] peer-checked:bg-[var(--em2)] rounded-[10px] transition-colors duration-200"></div>
+                <div className="absolute w-[14px] h-[14px] left-[3px] top-[3px] bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-[16px]"></div>
+              </label>
+            </div>
           </div>
-          <button className="inline-flex items-center gap-[6px] text-[12px] py-[7px] px-[13px] rounded-[var(--rs)] cursor-pointer transition-all duration-[180ms] bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)] text-[#fca5a5]">
-            <Trash2 size={13} />
-            Delete organisation
-          </button>
+
+          <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[18px_20px]">
+            <div className="text-[12px] text-[var(--red)] font-medium tracking-[.04em] uppercase mb-[8px]">Danger zone</div>
+            <div className="text-[12px] text-[var(--t4)] mb-[12px] leading-[1.6]">
+              Deleting the organisation removes all connected repositories, review history, and team members permanently.
+            </div>
+            <button className="inline-flex items-center gap-[6px] text-[12px] font-[family-name:var(--font-b)] p-[7px_13px] rounded-[var(--rs)] border border-[rgba(239,68,68,0.2)] bg-[rgba(239,68,68,0.08)] text-[#fca5a5] cursor-pointer transition-all duration-[180ms] hover:border-[var(--border3)] hover:text-[var(--t2)]">
+              <Trash size={13} />
+              Delete organisation
+            </button>
+          </div>
         </div>
       </div>
     </div>

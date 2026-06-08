@@ -1,113 +1,125 @@
-import { Check, X } from "lucide-react";
-
-const plans = [
-  {
-    name: "Starter",
-    desc: "Perfect for indie devs and small projects.",
-    price: "$0",
-    period: "/ mo",
-    featured: false,
-    features: [
-      { text: "Up to 3 repos", included: true },
-      { text: "50 reviews / month", included: true },
-      { text: "Error + warning detection", included: true },
-      { text: "GitHub App integration", included: true },
-      { text: "Security scan", included: false },
-      { text: "Team management", included: false },
-      { text: "Priority support", included: false },
-    ],
-    cta: "Get started free",
-    ctaStyle: "border border-[var(--border2)] bg-transparent text-[var(--t4)] hover:border-[var(--border3)] hover:text-[var(--t2)]",
-  },
-  {
-    name: "Pro",
-    desc: "For growing teams shipping fast and often.",
-    price: "$29",
-    period: "/ mo",
-    featured: true,
-    features: [
-      { text: "Unlimited repos", included: true },
-      { text: "Unlimited reviews", included: true },
-      { text: "Security + OWASP scan", included: true },
-      { text: "Secret detection", included: true },
-      { text: "Team management (20 seats)", included: true },
-      { text: "Slack + email alerts", included: true },
-      { text: "Priority email support", included: true },
-    ],
-    cta: "Upgrade to Pro",
-    ctaStyle: "bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.25)] text-[var(--em3)] hover:bg-[rgba(34,197,94,0.18)] hover:text-[var(--em4)]",
-  },
-  {
-    name: "Enterprise",
-    desc: "Custom deployment, SSO, and SLA for large orgs.",
-    price: "Custom",
-    period: "",
-    featured: false,
-    features: [
-      { text: "Everything in Pro", included: true },
-      { text: "SAML / SSO", included: true },
-      { text: "Audit logs", included: true },
-      { text: "On-prem deployment option", included: true },
-      { text: "Custom AI model tuning", included: true },
-      { text: "Dedicated Slack support", included: true },
-      { text: "99.9% SLA", included: true },
-    ],
-    cta: "Talk to sales",
-    ctaStyle: "border border-[var(--border2)] bg-transparent text-[var(--t4)] hover:border-[var(--border3)] hover:text-[var(--t2)]",
-  },
-];
+"use client";
 
 export default function PricingPage() {
   return (
-    <>
-      <div className="text-center mb-[28px]">
-        <div className="font-[family-name:var(--font-display)] text-[28px] text-[var(--t1)] mb-[6px]">
-          Simple, honest <em className="italic text-[var(--em)]">pricing.</em>
-        </div>
-        <div className="text-[13px] text-[var(--t4)]">No per-seat tricks. Cancel any time.</div>
+    <div className="page-section" style={{ animation: "fadeIn 0.3s ease both" }}>
+      {/* Header Section */}
+      <div className="text-center mb-[42px] mt-[10px]">
+        <h1 className="font-[family-name:var(--font-d)] text-[38px] font-normal text-[var(--t1)] mb-[8px] leading-tight">
+          Simple, honest <span className="text-[var(--em3)] italic">pricing.</span>
+        </h1>
+        <p className="text-[14px] text-[var(--t4)] font-light">
+          No per-seat tricks. Cancel any time.
+        </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-[14px] items-start">
-        {plans.map((plan) => (
-          <div
-            key={plan.name}
-            className={`bg-[var(--g3)] border rounded-[var(--rl)] py-[28px] px-[28px] transition-colors duration-200 relative ${
-              plan.featured
-                ? "border-[rgba(34,197,94,0.35)]"
-                : "border-[var(--border)]"
-            }`}
-          >
-            {plan.featured && (
-              <div className="absolute -top-[1px] left-1/2 -translate-x-1/2 bg-[var(--em2)] text-[#022c0a] text-[10px] font-bold py-[3px] px-[14px] rounded-b-[8px] tracking-[0.04em] uppercase">
-                Most popular
-              </div>
-            )}
-            <div className="text-[16px] font-medium text-[var(--t1)] mb-[6px]">{plan.name}</div>
-            <div className="text-[12px] text-[var(--t4)] mb-[20px] leading-[1.6]">{plan.desc}</div>
-            <div className="font-[family-name:var(--font-display)] text-[40px] text-[var(--t1)] leading-[1]">
-              {plan.price}
-              {plan.period && <span className="text-[13px] text-[var(--t4)]"> {plan.period}</span>}
+      {/* Pricing Grid */}
+      <div className="grid grid-cols-3 gap-[20px] items-stretch max-w-[1100px] mx-auto">
+        {/* Starter Plan */}
+        <div className="bg-[rgba(17,28,17,0.35)] border border-[var(--border)] rounded-[var(--rl)] p-[32px] flex flex-col justify-between transition-colors duration-200">
+          <div>
+            <h2 className="text-[17px] font-semibold text-[var(--t1)] mb-[6px] tracking-wide">
+              Starter
+            </h2>
+            <p className="text-[12px] text-[var(--t4)] mb-[24px] leading-[1.6]">
+              Perfect for indie devs and small projects.
+            </p>
+            <div className="flex items-baseline font-[family-name:var(--font-d)] text-[44px] text-[var(--t1)] leading-none mb-[28px]">
+              $0
+              <span className="text-[11px] text-[var(--t5)] font-[family-name:var(--font-b)] ml-[4px]">
+                / mo
+              </span>
             </div>
 
-            <ul className="list-none flex flex-col gap-[9px] my-[20px]">
-              {plan.features.map((f) => (
-                <li key={f.text} className={`flex items-start gap-[8px] text-[12px] ${f.included ? "text-[var(--t3)]" : "text-[var(--t5)]"}`}>
-                  {f.included ? (
-                    <Check size={13} className="text-[var(--em)] mt-[1px] shrink-0" />
-                  ) : (
-                    <X size={13} className="text-[var(--t5)] mt-[1px] shrink-0" />
-                  )}
-                  {f.text}
-                </li>
-              ))}
+            <ul className="list-none flex flex-col gap-[11px] p-0 m-0">
+              <li className="text-[13px] text-[var(--em3)] font-light">Up to 3 repos</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">50 reviews / month</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">Error + warning detection</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">GitHub App integration</li>
+              <li className="text-[13px] text-[var(--t5)] font-light">Security scan</li>
+              <li className="text-[13px] text-[var(--t5)] font-light">Team management</li>
+              <li className="text-[13px] text-[var(--t5)] font-light">Priority support</li>
             </ul>
-
-            <button className={`w-full justify-center inline-flex items-center gap-[6px] text-[12px] py-[7px] px-[13px] rounded-[var(--rs)] cursor-pointer transition-all duration-[180ms] ${plan.ctaStyle}`}>
-              {plan.cta}
-            </button>
           </div>
-        ))}
+
+          <button
+            type="button"
+            className="w-full mt-[32px] text-[12px] font-[family-name:var(--font-b)] p-[10px_14px] rounded-[var(--rs)] border border-[var(--border2)] bg-transparent text-[var(--t4)] cursor-pointer transition-all duration-[180ms] hover:border-[var(--border3)] hover:text-[var(--t2)] text-center"
+          >
+            Get started free
+          </button>
+        </div>
+
+        {/* Pro Plan */}
+        <div className="bg-[rgba(17,28,17,0.35)] border border-[rgba(34,197,94,0.3)] rounded-[var(--rl)] p-[32px] flex flex-col justify-between transition-colors duration-200 relative">
+          <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 bg-[var(--em)] text-[#022c0a] text-[10px] font-bold p-[4px_16px] rounded-full tracking-[.06em] uppercase whitespace-nowrap">
+            Most Popular
+          </div>
+          <div>
+            <h2 className="text-[17px] font-semibold text-[var(--t1)] mb-[6px] tracking-wide">
+              Pro
+            </h2>
+            <p className="text-[12px] text-[var(--t4)] mb-[24px] leading-[1.6]">
+              For growing teams shipping fast and often.
+            </p>
+            <div className="flex items-baseline font-[family-name:var(--font-d)] text-[44px] text-[var(--t1)] leading-none mb-[28px]">
+              $29
+              <span className="text-[11px] text-[var(--t5)] font-[family-name:var(--font-b)] ml-[4px]">
+                / mo
+              </span>
+            </div>
+
+            <ul className="list-none flex flex-col gap-[11px] p-0 m-0">
+              <li className="text-[13px] text-[var(--em3)] font-light">Unlimited repos</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">Unlimited reviews</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">Security + OWASP scan</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">Secret detection</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">Team management (20 seats)</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">Slack + email alerts</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">Priority email support</li>
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            className="w-full mt-[32px] text-[12px] font-semibold p-[10px_14px] rounded-[var(--rs)] border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.06)] text-[var(--em3)] cursor-pointer transition-all duration-[180ms] hover:bg-[rgba(34,197,94,0.12)] text-center"
+          >
+            Upgrade to Pro
+          </button>
+        </div>
+
+        {/* Enterprise Plan */}
+        <div className="bg-[rgba(17,28,17,0.35)] border border-[var(--border)] rounded-[var(--rl)] p-[32px] flex flex-col justify-between transition-colors duration-200">
+          <div>
+            <h2 className="text-[17px] font-semibold text-[var(--t1)] mb-[6px] tracking-wide">
+              Enterprise
+            </h2>
+            <p className="text-[12px] text-[var(--t4)] mb-[24px] leading-[1.6]">
+              Custom deployment, SSO, and SLA for large orgs.
+            </p>
+            <div className="flex items-baseline font-[family-name:var(--font-d)] text-[38px] text-[var(--t1)] leading-none mb-[28px]">
+              Custom
+            </div>
+
+            <ul className="list-none flex flex-col gap-[11px] p-0 m-0">
+              <li className="text-[13px] text-[var(--em3)] font-light">Everything in Pro</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">SAML / SSO</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">Audit logs</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">On-prem deployment option</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">Custom AI model tuning</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">Dedicated Slack support</li>
+              <li className="text-[13px] text-[var(--em3)] font-light">99.9% SLA</li>
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            className="w-full mt-[32px] text-[12px] font-[family-name:var(--font-b)] p-[10px_14px] rounded-[var(--rs)] border border-[var(--border2)] bg-transparent text-[var(--t4)] cursor-pointer transition-all duration-[180ms] hover:border-[var(--border3)] hover:text-[var(--t2)] text-center"
+          >
+            Talk to sales
+          </button>
+        </div>
       </div>
-    </>
+    </div>
   );
 }

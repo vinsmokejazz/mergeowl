@@ -1,85 +1,42 @@
-import { StatCard } from "@/components/ui/StatCard";
-import { TrendingUp, AlertCircle, Circle, GitBranch, Plus } from "lucide-react";
+"use client";
 
-const repos = [
-  { name: "acme/api", lang: "TypeScript", prs: 12, status: "green" },
-  { name: "acme/web", lang: "React", prs: 5, status: "green" },
-  { name: "acme/infra", lang: "Terraform", prs: 3, status: "green" },
-  { name: "acme/mobile", lang: "Swift", prs: 1, status: "green" },
-  { name: "acme/sdk", lang: "Go", prs: 2, status: "yellow" },
-  { name: "acme/cli", lang: "Rust", prs: 0, status: "green" },
-  { name: "acme/docs", lang: "Markdown", prs: 0, status: "gray" },
-  { name: "acme/analytics", lang: "Python", prs: 4, status: "yellow" },
+import { Activity, AlertTriangle, Circle, Plus } from "lucide-react";
+import { StatCard } from "@/components/dashboard/stat-card";
+import { RepoCard } from "@/components/dashboard/repo-card";
+
+const reposData = [
+  { name: "acme/api", lang: "TypeScript", prs: 12, status: "green" as const },
+  { name: "acme/web", lang: "React", prs: 5, status: "green" as const },
+  { name: "acme/infra", lang: "Terraform", prs: 3, status: "green" as const },
+  { name: "acme/mobile", lang: "Swift", prs: 1, status: "green" as const },
+  { name: "acme/sdk", lang: "Go", prs: 2, status: "yellow" as const },
+  { name: "acme/cli", lang: "Rust", prs: 0, status: "green" as const },
+  { name: "acme/docs", lang: "Markdown", prs: 0, status: "gray" as const },
+  { name: "acme/analytics", lang: "Python", prs: 4, status: "yellow" as const },
 ];
-
-const statusColors: Record<string, string> = {
-  green: "bg-[var(--em)]",
-  yellow: "bg-[var(--yellow)]",
-  gray: "bg-[var(--t5)]",
-};
-
-const statusLabels: Record<string, string> = {
-  green: "Active",
-  yellow: "Setup needed",
-  gray: "Paused",
-};
 
 export default function ReposPage() {
   return (
-    <>
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-[14px] mb-[20px]">
-        <StatCard label="Connected repos" value="24" delta="+3 this week" deltaIcon={<TrendingUp size={12} />} />
-        <StatCard
-          label="Active today"
-          value="11"
-          delta="All healthy"
-          deltaIcon={<Circle size={8} fill="currentColor" className="text-[var(--em)]" />}
-          deltaColor="text-[var(--em3)]"
-        />
-        <StatCard
-          label="Pending setup"
-          value="2"
-          valueColor="text-[var(--yellow)]"
-          delta="Action needed"
-          deltaColor="text-[var(--yellow)]"
-          deltaIcon={<AlertCircle size={12} />}
-        />
+    <div className="page-section" style={{ animation: "fadeIn 0.3s ease both" }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-[14px] mb-[20px]">
+        <StatCard title="Connected repos" value="24" delta={<><Activity size={12} />+3 this week</>} deltaType="up" />
+        <StatCard title="Active today" value="11" delta={<><Circle size={8} fill="currentColor" /><span className="text-[var(--em3)] font-medium">All healthy</span></>} deltaType="neutral" />
+        <StatCard title="Pending setup" value="2" delta={<><AlertTriangle size={12} />Action needed</>} deltaType="warning" />
       </div>
 
-      {/* Header */}
       <div className="flex items-center justify-between mb-[14px]">
-        <h3 className="text-[14px] font-medium text-[var(--t1)]">All repositories</h3>
-        <button className="inline-flex items-center gap-[6px] text-[12px] py-[7px] px-[13px] rounded-[var(--rs)] cursor-pointer transition-all duration-[180ms] bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.25)] text-[var(--em3)] hover:bg-[rgba(34,197,94,0.18)]">
+        <h3 className="text-[14px] font-medium text-[var(--t1)] m-0">All repositories</h3>
+        <button className="inline-flex items-center gap-[6px] text-[12px] font-[family-name:var(--font-b)] p-[7px_13px] rounded-[var(--rs)] border border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.1)] text-[var(--em3)] cursor-pointer transition-all duration-[180ms] hover:border-[rgba(34,197,94,0.18)] hover:bg-[rgba(34,197,94,0.18)] hover:text-[var(--em4)]">
           <Plus size={13} />
           Add repo
         </button>
       </div>
 
-      {/* Repo list */}
       <div className="flex flex-col gap-[8px]">
-        {repos.map((r) => (
-          <div
-            key={r.name}
-            className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] py-[16px] px-[18px] flex items-center gap-[14px] transition-all duration-200 hover:border-[var(--border3)] hover:-translate-y-[1px]"
-          >
-            <div className="w-[38px] h-[38px] rounded-[8px] bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.15)] flex items-center justify-center text-[18px] text-[var(--em)] shrink-0">
-              <GitBranch size={18} />
-            </div>
-            <div>
-              <div className="text-[13px] font-medium text-[var(--t1)]">{r.name}</div>
-              <div className="text-[11px] text-[var(--t4)] mt-[2px]">{r.lang} · {r.prs} open PRs</div>
-            </div>
-            <div className="ml-auto flex items-center gap-[8px]">
-              <div className={`w-[7px] h-[7px] rounded-full ${statusColors[r.status]}`} />
-              <span className="text-[11px] text-[var(--t4)]">{statusLabels[r.status]}</span>
-              <button className="inline-flex items-center gap-[6px] text-[11px] py-[5px] px-[10px] rounded-[var(--rs)] border border-[var(--border2)] bg-transparent text-[var(--t4)] cursor-pointer transition-all duration-[180ms] hover:border-[var(--em2)] hover:text-[var(--em3)]">
-                Configure
-              </button>
-            </div>
-          </div>
+        {reposData.map((repo) => (
+          <RepoCard key={repo.name} {...repo} />
         ))}
       </div>
-    </>
+    </div>
   );
 }
