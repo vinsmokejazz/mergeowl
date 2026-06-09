@@ -1,7 +1,11 @@
 import { App } from "@octokit/app";
 import fs from "node:fs";
 
-// Support both file path (local dev) and env var (production)
+console.log(
+  "GITHUB_PRIVATE_KEY exists:",
+  !!process.env.GITHUB_PRIVATE_KEY
+);
+
 const privateKey = process.env.GITHUB_PRIVATE_KEY
   ? process.env.GITHUB_PRIVATE_KEY.replace(/\\n/g, "\n")
   : fs.readFileSync("./private-key.pem", "utf-8");
