@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState, useEffect } from "react";
 
 interface ChartCardProps {
   readonly title: string;
@@ -8,6 +8,12 @@ interface ChartCardProps {
 }
 
 export function ChartCard({ title, subtitle, height = "220px", children }: ChartCardProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[18px_20px]">
       <div className="flex items-center justify-between mb-[14px]">
@@ -15,7 +21,7 @@ export function ChartCard({ title, subtitle, height = "220px", children }: Chart
         {subtitle && <span className="text-[var(--t4)] text-[12px]">{subtitle}</span>}
       </div>
       <div className="relative w-full" style={{ height }}>
-        {children}
+        {mounted ? children : null}
       </div>
     </div>
   );

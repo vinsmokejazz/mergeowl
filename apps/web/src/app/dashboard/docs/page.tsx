@@ -52,19 +52,19 @@ export default function DocsPage() {
             </div>
             <div className="flex flex-col gap-[12px]">
               <a
-                href="#"
+                href="https://github.com"
                 className="text-[12px] text-[var(--em3)] hover:text-[var(--em4)] transition-colors no-underline flex items-center gap-[6px]"
               >
                 GitHub App install page
               </a>
               <a
-                href="#"
+                href="https://github.com"
                 className="text-[12px] text-[var(--em3)] hover:text-[var(--em4)] transition-colors no-underline flex items-center gap-[6px]"
               >
                 API playground
               </a>
               <a
-                href="#"
+                href="https://discord.com"
                 className="text-[12px] text-[var(--em3)] hover:text-[var(--em4)] transition-colors no-underline flex items-center gap-[6px]"
               >
                 Join Discord community

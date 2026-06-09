@@ -25,10 +25,7 @@ export default function PricingPage() {
               Perfect for indie devs and small projects.
             </p>
             <div className="flex items-baseline font-[family-name:var(--font-d)] text-[44px] text-[var(--t1)] leading-none mb-[28px]">
-              $0
-              <span className="text-[11px] text-[var(--t5)] font-[family-name:var(--font-b)] ml-[4px]">
-                / mo
-              </span>
+              $0 <span className="text-[11px] text-[var(--t5)] font-[family-name:var(--font-b)] ml-[4px]">/ mo</span>
             </div>
 
             <ul className="list-none flex flex-col gap-[11px] p-0 m-0">
@@ -63,10 +60,7 @@ export default function PricingPage() {
               For growing teams shipping fast and often.
             </p>
             <div className="flex items-baseline font-[family-name:var(--font-d)] text-[44px] text-[var(--t1)] leading-none mb-[28px]">
-              $29
-              <span className="text-[11px] text-[var(--t5)] font-[family-name:var(--font-b)] ml-[4px]">
-                / mo
-              </span>
+              $29 <span className="text-[11px] text-[var(--t5)] font-[family-name:var(--font-b)] ml-[4px]">/ mo</span>
             </div>
 
             <ul className="list-none flex flex-col gap-[11px] p-0 m-0">
