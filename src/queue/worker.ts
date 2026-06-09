@@ -10,8 +10,7 @@ import { findRelevantChunks } from "../db/search";
 import { db } from "../db/client";
 import { reviews } from "../db/schema";
 import type { ReviewJobData } from "./producer";
-
-const connection = { host: "localhost", port: 6379 };
+import { connection } from "./redis";
 
 const worker = new Worker<ReviewJobData>(
   "pr-review",
@@ -61,7 +60,7 @@ const worker = new Worker<ReviewJobData>(
 
     console.log(`[Worker] ✅ Review posted and saved for PR #${pull_number}`);
   },
-  { connection },
+  { connection: connection as any },
 );
 
 worker.on("completed", (job) =>

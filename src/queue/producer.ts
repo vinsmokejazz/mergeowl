@@ -1,8 +1,8 @@
 import { Queue } from "bullmq";
 
-const connection = { host: "localhost", port: 6379 };
+import { connection } from "./redis";
 
-export const reviewQueue = new Queue("pr-review", { connection });
+export const reviewQueue = new Queue("pr-review", { connection: connection as any });
 
 export interface ReviewJobData {
   owner: string;

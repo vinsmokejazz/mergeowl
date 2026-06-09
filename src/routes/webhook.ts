@@ -15,7 +15,7 @@ webhookRouter.post("/", async (req: Request, res: Response) => {
       id: (req.headers["x-github-delivery"] as string) || "dummy-id",
       name: req.headers["x-github-event"] as any,
       signature: req.headers["x-hub-signature-256"] as string,
-      payload: req.body,
+      payload: req.body as string,
     });
 
     res.status(200).send("OK");

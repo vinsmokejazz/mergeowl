@@ -29,6 +29,7 @@
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
+    "ioredis": "^5.11.1",
     "openai": "^6.35.0",
     "pg": "^8.21.0"
   },

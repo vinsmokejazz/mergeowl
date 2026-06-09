@@ -6,6 +6,7 @@ import { webhookRouter } from "./routes/webhook";
 import { apiRouter } from "./routes/api";
 
 const app = express();
+app.disable("x-powered-by");
 const PORT = process.env.PORT || 3000;
 
 // Raw body parsing for webhook signature verification
