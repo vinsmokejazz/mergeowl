@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
+import { SessionProvider } from "@/components/providers/session-provider";
 import "./globals.css";
 
 const instrumentSerif = Instrument_Serif({
@@ -37,7 +38,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${instrumentSerif.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased h-full m-0 p-0`}>
-        {children}
+        <SessionProvider>
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );
