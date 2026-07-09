@@ -5,6 +5,7 @@ import express from "express";
 import cors from "cors";
 import { webhookRouter } from "./routes/webhook";
 import { apiRouter } from "./routes/api";
+import { startWorker } from "./queue/worker";
 
 const app = express();
 app.disable("x-powered-by");
@@ -15,10 +16,12 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
   : ["http://localhost:3000", "http://localhost:3001"];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 
 // Raw body parsing for webhook signature verification
 app.use("/webhook", express.raw({ type: "*/*" }), (req, _res, next) => {
@@ -34,5 +37,7 @@ app.use("/api", apiRouter);
 app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
+
+startWorker();
 
 app.listen(PORT, () => console.log(`Server on port ${PORT}`));

@@ -9,65 +9,68 @@ import { postReview } from "../github/comments";
 import { findRelevantChunks } from "../db/search";
 import { db } from "../db/client";
 import { reviews } from "../db/schema";
-import type { ReviewJobData } from "./producer";
 import { connection } from "./redis";
+import type { ReviewJobData } from "./producer";
 
-const worker = new Worker<ReviewJobData>(
-  "pr-review",
-  async (job) => {
-    const { owner, repo, repoFullName, pull_number, installation_id } =
-      job.data;
+export function startWorker() {
+  const worker = new Worker<ReviewJobData>(
+    "pr-review",
+    async (job) => {
+      const { owner, repo, repoFullName, pull_number, installation_id } =
+        job.data;
 
-    console.log(`\n[Worker] Processing PR #${pull_number} in ${repoFullName}`);
+      console.log(
+        `\n[Worker] Processing PR #${pull_number} in ${repoFullName}`,
+      );
 
-    const octokit = await githubApp.getInstallationOctokit(installation_id);
+      const octokit = await githubApp.getInstallationOctokit(installation_id);
 
-    // Get PR title
-    const { data: pr } = await octokit.request(
-      "GET /repos/{owner}/{repo}/pulls/{pull_number}",
-      { owner, repo, pull_number },
-    );
+      const { data: pr } = await octokit.request(
+        "GET /repos/{owner}/{repo}/pulls/{pull_number}",
+        { owner, repo, pull_number },
+      );
 
-    const { files, diffText } = await fetchDiff(
-      octokit,
-      owner,
-      repo,
-      pull_number,
-    );
-    const contextChunks = await findRelevantChunks(repoFullName, diffText);
-    const review = await getAIReview(diffText, contextChunks);
+      const { files, diffText } = await fetchDiff(
+        octokit,
+        owner,
+        repo,
+        pull_number,
+      );
+      const contextChunks = await findRelevantChunks(repoFullName, diffText);
+      const review = await getAIReview(diffText, contextChunks);
 
-    await postReview(
-      octokit,
-      owner,
-      repo,
-      pull_number,
-      review.summary,
-      review.reviews,
-      files,
-    );
+      await postReview(
+        octokit,
+        owner,
+        repo,
+        pull_number,
+        review.summary,
+        review.reviews,
+        files,
+      );
 
-    // Save to DB
-    await db.insert(reviews).values({
-      repoFullName,
-      pullNumber: pull_number,
-      pullTitle: pr.title,
-      commentsCount: review.reviews.length,
-      summary: review.summary,
-      status: "completed",
-      createdAt: new Date().toISOString(),
-    });
+      await db.insert(reviews).values({
+        repoFullName,
+        pullNumber: pull_number,
+        pullTitle: pr.title,
+        commentsCount: review.reviews.length,
+        summary: review.summary,
+        status: "completed",
+        createdAt: new Date().toISOString(),
+      });
 
-    console.log(`[Worker] ✅ Review posted and saved for PR #${pull_number}`);
-  },
-  { connection: connection as any },
-);
+      console.log(`[Worker] ✅ Review posted and saved for PR #${pull_number}`);
+    },
+    { connection: connection as any },
+  );
 
-worker.on("completed", (job) =>
-  console.log(`[Worker] Job ${job.id} completed`),
-);
-worker.on("failed", (job, err) =>
-  console.error(`[Worker] Job ${job?.id} failed:`, err.message),
-);
+  worker.on("completed", (job) =>
+    console.log(`[Worker] Job ${job.id} completed`),
+  );
+  worker.on("failed", (job, err) =>
+    console.error(`[Worker] Job ${job?.id} failed:`, err.message),
+  );
 
-console.log("Worker started, waiting for jobs...");
+  console.log("Worker started inside API process");
+  return worker;
+}
