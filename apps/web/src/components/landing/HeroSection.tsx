@@ -9,7 +9,7 @@ export function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const [counters, setCounters] = useState({ c1: 0, c2: 0, c3: 0 });
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | null>(null);
   const hasAnimated = useRef(false);
 
   useEffect(() => {
@@ -199,6 +199,7 @@ export function HeroSection() {
     }
 
     function handleResize() {
+      if (!canvas || !hero) return;
       W = canvas.width = hero.offsetWidth;
       H = canvas.height = hero.offsetHeight;
       init();
