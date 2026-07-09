@@ -1,6 +1,9 @@
 import { Request, Response, Router } from "express";
 import { githubApp } from "../github/app";
-import { addReviewJob } from "../queue/producer";
+import { addReviewJob, addIndexJob } from "../queue/producer";
+import { db } from "../db/client";
+import { installations } from "../db/schema";
+import { eq } from "drizzle-orm";
 
 export const webhookRouter = Router();
 
@@ -51,4 +54,63 @@ githubApp.webhooks.on("pull_request.synchronize", async ({ payload }) => {
     pull_number: payload.pull_request.number,
     installation_id,
   });
+});
+
+// App installed
+githubApp.webhooks.on("installation.created", async ({ payload }) => {
+  const installationId = payload.installation.id;
+  const accountLogin = payload.installation.account.login;
+  const accountType = payload.installation.account.type;
+
+  console.log(`[Webhook] App installed on ${accountLogin} (ID: ${installationId})`);
+
+  try {
+    // Record installation
+    await db.insert(installations).values({
+      installationId,
+      accountLogin,
+      accountType,
+    });
+  } catch (err: any) {
+    console.warn("[Webhook] Failed to insert installation record (might already exist):", err.message);
+  }
+
+  // Index connected repositories
+  if (payload.repositories) {
+    for (const repo of payload.repositories) {
+      console.log(`[Webhook] Queueing dynamic indexing for connected repo: ${repo.full_name}`);
+      await addIndexJob({
+        repoFullName: repo.full_name,
+        installationId,
+      });
+    }
+  }
+});
+
+// App uninstalled
+githubApp.webhooks.on("installation.deleted", async ({ payload }) => {
+  const installationId = payload.installation.id;
+  console.log(`[Webhook] App uninstalled (ID: ${installationId})`);
+
+  try {
+    await db.delete(installations).where(eq(installations.installationId, installationId));
+  } catch (err: any) {
+    console.error("[Webhook] Failed to delete installation record:", err.message);
+  }
+});
+
+// Repositories added to existing installation
+githubApp.webhooks.on("installation_repositories.added", async ({ payload }) => {
+  const installationId = payload.installation.id;
+  console.log(`[Webhook] Repositories added to installation (ID: ${installationId})`);
+
+  if (payload.repositories_added) {
+    for (const repo of payload.repositories_added) {
+      console.log(`[Webhook] Queueing dynamic indexing for newly added repo: ${repo.full_name}`);
+      await addIndexJob({
+        repoFullName: repo.full_name,
+        installationId,
+      });
+    }
+  }
 });

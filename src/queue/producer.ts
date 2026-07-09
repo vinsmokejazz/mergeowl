@@ -25,3 +25,22 @@ export async function addReviewJob(data: ReviewJobData): Promise<void> {
     `Job added to queue: PR #${data.pull_number} in ${data.repoFullName}`,
   );
 }
+
+export interface IndexJobData {
+  repoFullName: string;
+  installationId: number;
+}
+
+export async function addIndexJob(data: IndexJobData): Promise<void> {
+  await reviewQueue.add("index-repo", data, {
+    attempts: 3,
+    backoff: {
+      type: "exponential",
+      delay: 5000,
+    },
+  });
+
+  console.log(
+    `Job added to queue: Indexing repository ${data.repoFullName}`,
+  );
+}

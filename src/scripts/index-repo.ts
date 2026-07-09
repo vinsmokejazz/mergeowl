@@ -9,9 +9,13 @@ import { execSync } from "node:child_process";
 import { indexRepository } from "../db/indexer";
 
 async function main() {
-
-  // for now testing repo is hardcoded
-  const repoFullName = "vinsmokejazz/learning-log";
+  const repoFullName = process.argv[2];
+  if (!repoFullName) {
+    console.error("Error: Please provide a repository name (e.g. owner/repo) as a command line argument.");
+    console.error("Usage: npm run index-repo <owner>/<repo>");
+    console.error("Example: npm run index-repo vinsmokejazz/learning-log");
+    process.exit(1);
+  }
   const repoUrl = `https://github.com/${repoFullName}.git`;
 
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mergeowl-"));
