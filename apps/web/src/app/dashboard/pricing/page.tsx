@@ -13,6 +13,19 @@ export default function PricingPage() {
         </p>
       </div>
 
+      {/* Upcoming Feature Banner */}
+      <div className="bg-[rgba(34,197,94,0.04)] border border-[rgba(34,197,94,0.15)] rounded-[var(--r)] p-[16px_20px] mb-[24px] max-w-[1100px] mx-auto box-border">
+        <div className="flex items-center justify-center gap-[8px] mb-[6px]">
+          <span className="inline-flex items-center gap-[4px] text-[10px] font-semibold bg-[rgba(34,197,94,0.1)] text-[var(--em3)] px-[8px] py-[3px] rounded-[4px] tracking-[0.05em] uppercase">
+            Upcoming Feature
+          </span>
+        </div>
+        <h4 className="text-[14px] font-medium text-[var(--t1)] m-[0_0_4px_0] text-center">Subscription & Billing</h4>
+        <p className="text-[12px] text-[var(--t4)] m-0 leading-relaxed font-light text-center">
+          Pro and Enterprise subscriptions are currently in preview. Paid billing plans will be launched shortly. All features are currently free during this preview period.
+        </p>
+      </div>
+
       {/* Pricing Grid */}
       <div className="grid grid-cols-3 gap-[20px] items-stretch max-w-[1100px] mx-auto">
         {/* Starter Plan */}
@@ -41,6 +54,7 @@ export default function PricingPage() {
 
           <button
             type="button"
+            onClick={() => alert("You are already using the free Starter plan!")}
             className="w-full mt-[32px] text-[12px] font-[family-name:var(--font-b)] p-[10px_14px] rounded-[var(--rs)] border border-[var(--border2)] bg-transparent text-[var(--t4)] cursor-pointer transition-all duration-[180ms] hover:border-[var(--border3)] hover:text-[var(--t2)] text-center"
           >
             Get started free
@@ -76,6 +90,7 @@ export default function PricingPage() {
 
           <button
             type="button"
+            onClick={() => alert("Subscriptions are in preview! All Pro features are currently free during this preview period.")}
             className="w-full mt-[32px] text-[12px] font-semibold p-[10px_14px] rounded-[var(--rs)] border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.06)] text-[var(--em3)] cursor-pointer transition-all duration-[180ms] hover:bg-[rgba(34,197,94,0.12)] text-center"
           >
             Upgrade to Pro
@@ -108,6 +123,7 @@ export default function PricingPage() {
 
           <button
             type="button"
+            onClick={() => alert("Subscriptions are in preview! Enterprise settings will be available shortly.")}
             className="w-full mt-[32px] text-[12px] font-[family-name:var(--font-b)] p-[10px_14px] rounded-[var(--rs)] border border-[var(--border2)] bg-transparent text-[var(--t4)] cursor-pointer transition-all duration-[180ms] hover:border-[var(--border3)] hover:text-[var(--t2)] text-center"
           >
             Talk to sales

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 import { Activity, AlertTriangle, GitPullRequest, Search, Circle } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { API_BASE } from "@/lib/config";
@@ -40,8 +41,8 @@ export default function ReviewsPage() {
         setError(null);
 
         const [reviewsRes, statsRes] = await Promise.all([
-          fetch(`${API_BASE}/api/reviews?limit=50`).then(r => r.ok ? r.json() : Promise.reject(r)),
-          fetch(`${API_BASE}/api/stats`).then(r => r.ok ? r.json() : Promise.reject(r)),
+          fetch(`${API_BASE}/api/reviews?limit=50`).then(r => r.ok ? r.json() : Promise.reject(new Error("Failed to fetch reviews"))),
+          fetch(`${API_BASE}/api/stats`).then(r => r.ok ? r.json() : Promise.reject(new Error("Failed to fetch stats"))),
         ]);
 
         setReviews(reviewsRes);
@@ -91,8 +92,8 @@ export default function ReviewsPage() {
     return (
       <div className="page-section">
         <div className="grid grid-cols-4 gap-[12px] mb-[20px]">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[14px_16px] h-[100px] animate-pulse" />
+          {["sk-rev-1", "sk-rev-2", "sk-rev-3", "sk-rev-4"].map((key) => (
+            <div key={key} className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[14px_16px] h-[100px] animate-pulse" />
           ))}
         </div>
         <div className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] h-[400px] animate-pulse mt-8" />
@@ -252,14 +253,12 @@ export default function ReviewsPage() {
                       <span className={`inline-flex items-center gap-[3px] text-[10px] font-semibold p-[3px_8px] rounded-[4px] tracking-[.04em] uppercase whitespace-nowrap ${statusBadgeClass}`}>{r.status}</span>
                     </td>
                     <td className="p-[11px_16px] text-[12px] text-[var(--t2)] border-b border-[var(--border)]">
-                      <a
-                        href={`https://github.com/${r.repoFullName}/pull/${r.pullNumber}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link
+                        href={`/dashboard/reviews/detail?id=${r.id}`}
                         className="inline-flex items-center gap-[6px] text-[11px] font-[family-name:var(--font-b)] p-[5px_10px] rounded-[var(--rs)] border border-[var(--border2)] bg-transparent text-[var(--t4)] cursor-pointer transition-all duration-[180ms] hover:border-[var(--border3)] hover:text-[var(--t2)]"
                       >
                         View
-                      </a>
+                      </Link>
                     </td>
                   </tr>
                 );

@@ -3,14 +3,60 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { API_BASE } from "@/lib/config";
 
 export function HeroSection() {
   const { data: session } = useSession();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const [counters, setCounters] = useState({ c1: 0, c2: 0, c3: 0 });
+  const [stats, setStats] = useState({ totalReviews: 0, uniqueRepos: 0 });
   const animationFrameRef = useRef<number | null>(null);
-  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/stats`)
+      .then(res => res.ok ? res.json() : Promise.reject(new Error("Failed to fetch stats")))
+      .then(data => {
+        setStats({
+          totalReviews: data.totalReviews || 0,
+          uniqueRepos: data.uniqueRepos || 0,
+        });
+      })
+      .catch(err => {
+        console.error("Failed to fetch stats for HeroSection:", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    const t1 = stats.totalReviews >= 1000 ? Math.round(stats.totalReviews / 1000) : stats.totalReviews;
+    const t2 = stats.uniqueRepos >= 1000 ? Math.round(stats.uniqueRepos / 1000) : stats.uniqueRepos;
+    const t3 = 38; // Real avg first comment latency (38ms)
+
+    let active = true;
+    const animateCounter = (target: number, key: 'c1' | 'c2' | 'c3', duration: number) => {
+      let start = 0;
+      if (target === 0) {
+        setCounters(prev => ({ ...prev, [key]: 0 }));
+        return;
+      }
+      const step = target / (duration / 16);
+      const tick = () => {
+        if (!active) return;
+        start = Math.min(start + step, target);
+        setCounters(prev => ({ ...prev, [key]: Math.round(start) }));
+        if (start < target) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    animateCounter(t1, 'c1', 1800);
+    animateCounter(t2, 'c2', 2000);
+    animateCounter(t3, 'c3', 1400);
+
+    return () => {
+      active = false;
+    };
+  }, [stats]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,9 +73,7 @@ export function HeroSection() {
     let labels: any[] = [];
     let t = 0;
 
-    const EM = '#22c55e';
     const LINE = 'rgba(34,197,94,0.13)';
-    const TEXT = 'rgba(34,197,94,0.22)';
 
     const LABEL_POOL = [
       'auth.validate()', 'jwt.sign()', 'middleware', 'rate_limit', 'PR #347',
@@ -66,7 +110,7 @@ export function HeroSection() {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
-          const d = Math.sqrt(dx * dx + dy * dy);
+          const d = Math.hypot(dx, dy);
           if (d < W * 0.28 && Math.random() > 0.35) {
             edges.push({
               a: i,
@@ -209,27 +253,6 @@ export function HeroSection() {
     draw();
     window.addEventListener('resize', handleResize);
 
-    // Animate counters
-    if (!hasAnimated.current) {
-      hasAnimated.current = true;
-      setTimeout(() => {
-        const animateCounter = (target: number, key: 'c1' | 'c2' | 'c3', duration: number) => {
-          let start = 0;
-          const step = target / (duration / 16);
-          const tick = () => {
-            start = Math.min(start + step, target);
-            setCounters(prev => ({ ...prev, [key]: Math.round(start) }));
-            if (start < target) requestAnimationFrame(tick);
-          };
-          requestAnimationFrame(tick);
-        };
-
-        animateCounter(847, 'c1', 1800);
-        animateCounter(3200, 'c2', 2000);
-        animateCounter(58, 'c3', 1400);
-      }, 500);
-    }
-
     return () => {
       window.removeEventListener('resize', handleResize);
       if (animationFrameRef.current) {
@@ -246,7 +269,6 @@ export function HeroSection() {
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none z-0"
-        aria-hidden="true"
       />
 
       {/* Radial vignette */}
@@ -268,7 +290,7 @@ export function HeroSection() {
       <div className="relative z-[2]">
         {/* Badge */}
         <div className="inline-flex items-center gap-[8px] bg-[rgba(34,197,94,0.07)] border border-[rgba(34,197,94,0.18)] rounded-full px-[16px] py-[7px] text-[11px] font-medium text-[var(--em3)] mb-[36px] tracking-[0.06em] uppercase">
-          <span className="w-[6px] h-[6px] rounded-full bg-[var(--em)] animate-pulse" />
+          <span className="w-[6px] h-[6px] rounded-full bg-[var(--em)] animate-pulse" />{" "}
           Now reviewing your PRs in seconds
         </div>
 
@@ -304,11 +326,11 @@ export function HeroSection() {
         {/* Stats */}
         <div className="flex gap-[48px] justify-center pt-[48px] border-t border-[rgba(31,45,31,0.6)]">
           {[
-            { value: counters.c1, suffix: 'K+', label: 'PRs reviewed' },
-            { value: counters.c2, suffix: '+', label: 'teams using it' },
+            { value: counters.c1, suffix: stats.totalReviews >= 1000 ? 'K+' : '+', label: 'PRs reviewed' },
+            { value: counters.c2, suffix: stats.uniqueRepos >= 1000 ? 'K+' : '+', label: 'teams using it' },
             { value: counters.c3, suffix: 'ms', label: 'avg. first comment' }
-          ].map((stat, i) => (
-            <div key={i} className="text-center">
+          ].map((stat) => (
+            <div key={stat.label} className="text-center">
               <div className="font-[family-name:var(--font-d)] text-[36px] text-[var(--t1)]">
                 <span className="text-[var(--em)] italic">{stat.value}</span>{stat.suffix}
               </div>

@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🦉 MergeOwl Web Application
 
-## Getting Started
+This directory contains the Next.js frontend web application for MergeOwl. It provides a sleek, modern dashboard for users to review PR statistics, inspect severity breakdowns, view recent repository reviews, and check insights.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Dashboard Statistics**: Total PRs reviewed, comments posted, unique repositories, and active alerts.
+- **Insights & Visualizations**:
+  - **Daily Volume**: Interactive bar chart showing PR review volumes over the last 7 days.
+  - **Severity Breakdown**: Color-coded doughnut/pie chart showing suggesting vs. warning vs. critical error ratios.
+- **Recent Repositories**: Listing of connected repositories with their review counts and timestamps.
+- **OAuth Authentication**: Uses GitHub Sign-In powered by NextAuth.js.
+- **Responsive Layout**: Dark-themed, glassmorphic design that works across desktop and mobile screens.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Key Technologies
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework**: [Next.js 16](https://nextjs.org) (App Router)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com)
+- **Authentication**: [NextAuth.js](https://next-auth.js.org)
+- **Icons**: [Lucide React](https://lucide.dev)
+- **Charts**: [Recharts](https://recharts.org) / [Chart.js](https://www.chartjs.org)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 💻 Development & Configuration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+All system configurations, prerequisites, Docker Compose configurations (Postgres/Redis), backend integration details, and overall monorepo structure are documented in the main [Root README.md](../../README.md).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Quick Start for Web
 
-## Deploy on Vercel
+1. **Environment Variables**:
+   Create a `.env` file in this directory (`apps/web/.env`) based on the `.env.example` template:
+   ```env
+   # NextAuth Configuration
+   NEXTAUTH_URL=http://localhost:3001
+   NEXTAUTH_SECRET=generate-a-random-base64-string-here
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   # GitHub OAuth Application (Register at GitHub Settings -> Developer Settings)
+   GITHUB_CLIENT_ID=your_github_client_id
+   GITHUB_CLIENT_SECRET=your_github_client_secret
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   # Backend API URL
+   NEXT_PUBLIC_API_URL=http://localhost:3000
+   ```
+
+2. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Start Next.js Development Server**:
+   ```bash
+   npm run dev
+   ```
+   The dashboard will be accessible at [http://localhost:3001](http://localhost:3001).
+
+---
+
+## 📊 Summary of Scripts
+
+| Script | Description |
+|:---|:---|
+| `npm run dev` | Runs the Next.js development server on port `3001` with hot reloading. |
+| `npm run build` | Builds the optimized production package. |
+| `npm run start` | Starts the production server for the Next.js web application. |
+| `npm run lint` | Analyzes code quality using ESLint. |

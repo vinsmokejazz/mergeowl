@@ -105,12 +105,17 @@ export function startWorker() {
         files,
       );
 
+      const serializedSummary = JSON.stringify({
+        summary: review.summary,
+        reviews: review.reviews,
+      });
+
       await db.insert(reviews).values({
         repoFullName,
         pullNumber: pull_number,
         pullTitle: pr.title,
         commentsCount: review.reviews.length,
-        summary: review.summary,
+        summary: serializedSummary,
         status: "completed",
         createdAt: new Date().toISOString(),
       });

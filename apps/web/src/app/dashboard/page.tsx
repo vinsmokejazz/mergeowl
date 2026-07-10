@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Activity, AlertTriangle, ShieldAlert, GitPullRequest } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { ChartCard } from "@/components/dashboard/chart-card";
@@ -33,7 +34,6 @@ interface Review {
 }
 
 export default function DashboardOverview() {
-  const { data: session } = useSession();
   const [stats, setStats] = useState<Stats | null>(null);
   const [dailyData, setDailyData] = useState<DailyInsight[]>([]);
   const [recentReviews, setRecentReviews] = useState<Review[]>([]);
@@ -47,9 +47,9 @@ export default function DashboardOverview() {
         setError(null);
 
         const [statsRes, dailyRes, reviewsRes] = await Promise.all([
-          fetch(`${API_BASE}/api/stats`).then(r => r.ok ? r.json() : Promise.reject(r)),
-          fetch(`${API_BASE}/api/insights/daily`).then(r => r.ok ? r.json() : Promise.reject(r)),
-          fetch(`${API_BASE}/api/reviews?limit=4`).then(r => r.ok ? r.json() : Promise.reject(r)),
+          fetch(`${API_BASE}/api/stats`).then(r => r.ok ? r.json() : Promise.reject(new Error("Failed to fetch stats"))),
+          fetch(`${API_BASE}/api/insights/daily`).then(r => r.ok ? r.json() : Promise.reject(new Error("Failed to fetch insights"))),
+          fetch(`${API_BASE}/api/reviews?limit=4`).then(r => r.ok ? r.json() : Promise.reject(new Error("Failed to fetch reviews"))),
         ]);
 
         setStats(statsRes);
@@ -70,13 +70,13 @@ export default function DashboardOverview() {
     return (
       <div className="page-section">
         <div className="grid grid-cols-4 gap-[12px] mb-[20px]">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[14px_16px] h-[100px] animate-pulse" />
+          {["sk-card-1", "sk-card-2", "sk-card-3", "sk-card-4"].map((key) => (
+            <div key={key} className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] p-[14px_16px] h-[100px] animate-pulse" />
           ))}
         </div>
         <div className="grid grid-cols-2 gap-[14px] mb-[20px]">
-          {[...Array(2)].map((_, i) => (
-            <div key={i} className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] h-[220px] animate-pulse" />
+          {["sk-chart-1", "sk-chart-2"].map((key) => (
+            <div key={key} className="bg-[var(--g3)] border border-[var(--border)] rounded-[var(--r)] h-[220px] animate-pulse" />
           ))}
         </div>
       </div>
@@ -219,14 +219,12 @@ export default function DashboardOverview() {
                       <span className={`inline-flex items-center gap-[3px] text-[10px] font-semibold p-[3px_8px] rounded-[4px] tracking-[.04em] uppercase whitespace-nowrap ${statusBadgeClass}`}>{r.status}</span>
                     </td>
                     <td className="p-[11px_16px] text-[12px] text-[var(--t2)] border-b border-[var(--border)]">
-                      <a
-                        href={`https://github.com/${r.repoFullName}/pull/${r.pullNumber}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link
+                        href={`/dashboard/reviews/detail?id=${r.id}`}
                         className="inline-flex items-center gap-[6px] text-[11px] font-[family-name:var(--font-b)] p-[5px_10px] rounded-[var(--rs)] border border-[var(--border2)] bg-transparent text-[var(--t4)] cursor-pointer transition-all duration-[180ms] hover:border-[var(--border3)] hover:text-[var(--t2)]"
                       >
                         View
-                      </a>
+                      </Link>
                     </td>
                   </tr>
                 );
